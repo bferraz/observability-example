@@ -1,0 +1,6 @@
+@Softdesign.CoP.Observability.API_HostAddress = http://localhost:5027
+
+GET {{Softdesign.CoP.Observability.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

@@ -1,0 +1,69 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Estudos\\POC Observabilidade\\Microsservices\\Softdesign.CoP.Observability\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{5F6EB9B7-C8AB-4D45-B0CA-3CCA80471EF8}|src\\Softdesign.CoP.Observability.Bff\\Softdesign.CoP.Observability.Bff.csproj|c:\\estudos\\poc observabilidade\\microsservices\\softdesign.cop.observability\\src\\softdesign.cop.observability.bff\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5F6EB9B7-C8AB-4D45-B0CA-3CCA80471EF8}|src\\Softdesign.CoP.Observability.Bff\\Softdesign.CoP.Observability.Bff.csproj|solutionrelative:src\\softdesign.cop.observability.bff\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{DDE5B552-B85F-4F1D-92C3-21E824637EDE}|src\\Softdesign.CoP.Observability.Order\\Softdesign.CoP.Observability.Order.csproj|c:\\estudos\\poc observabilidade\\microsservices\\softdesign.cop.observability\\src\\softdesign.cop.observability.order\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{DDE5B552-B85F-4F1D-92C3-21E824637EDE}|src\\Softdesign.CoP.Observability.Order\\Softdesign.CoP.Observability.Order.csproj|solutionrelative:src\\softdesign.cop.observability.order\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5F6EB9B7-C8AB-4D45-B0CA-3CCA80471EF8}|src\\Softdesign.CoP.Observability.Bff\\Softdesign.CoP.Observability.Bff.csproj|c:\\estudos\\poc observabilidade\\microsservices\\softdesign.cop.observability\\src\\softdesign.cop.observability.bff\\properties\\launchsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{5F6EB9B7-C8AB-4D45-B0CA-3CCA80471EF8}|src\\Softdesign.CoP.Observability.Bff\\Softdesign.CoP.Observability.Bff.csproj|solutionrelative:src\\softdesign.cop.observability.bff\\properties\\launchsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 0,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "Program.cs",
+              "DocumentMoniker": "C:\\Estudos\\POC Observabilidade\\Microsservices\\Softdesign.CoP.Observability\\src\\Softdesign.CoP.Observability.Bff\\Program.cs",
+              "RelativeDocumentMoniker": "src\\Softdesign.CoP.Observability.Bff\\Program.cs",
+              "ToolTip": "C:\\Estudos\\POC Observabilidade\\Microsservices\\Softdesign.CoP.Observability\\src\\Softdesign.CoP.Observability.Bff\\Program.cs",
+              "RelativeToolTip": "src\\Softdesign.CoP.Observability.Bff\\Program.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAB0AAAA/AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-05-26T20:13:13.675Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "launchSettings.json",
+              "DocumentMoniker": "C:\\Estudos\\POC Observabilidade\\Microsservices\\Softdesign.CoP.Observability\\src\\Softdesign.CoP.Observability.Bff\\Properties\\launchSettings.json",
+              "RelativeDocumentMoniker": "src\\Softdesign.CoP.Observability.Bff\\Properties\\launchSettings.json",
+              "ToolTip": "C:\\Estudos\\POC Observabilidade\\Microsservices\\Softdesign.CoP.Observability\\src\\Softdesign.CoP.Observability.Bff\\Properties\\launchSettings.json",
+              "RelativeToolTip": "src\\Softdesign.CoP.Observability.Bff\\Properties\\launchSettings.json",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAUAAAAdAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2025-05-26T20:12:49.63Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "Program.cs",
+              "DocumentMoniker": "C:\\Estudos\\POC Observabilidade\\Microsservices\\Softdesign.CoP.Observability\\src\\Softdesign.CoP.Observability.Order\\Program.cs",
+              "RelativeDocumentMoniker": "src\\Softdesign.CoP.Observability.Order\\Program.cs",
+              "ToolTip": "C:\\Estudos\\POC Observabilidade\\Microsservices\\Softdesign.CoP.Observability\\src\\Softdesign.CoP.Observability.Order\\Program.cs",
+              "RelativeToolTip": "src\\Softdesign.CoP.Observability.Order\\Program.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA8AAABBAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-05-26T20:03:06.694Z"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
