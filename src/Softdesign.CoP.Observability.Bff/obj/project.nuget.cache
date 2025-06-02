@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "vAivtXTcFDg=",
+  "dgSpecHash": "3DWV1EvribI=",
   "success": true,
-  "projectFilePath": "c:\\Estudos\\POC Observabilidade\\Microsservices\\Softdesign.CoP.Observability\\src\\Softdesign.CoP.Observability.Bff\\Softdesign.CoP.Observability.Bff.csproj",
+  "projectFilePath": "C:\\Estudos\\POC Observabilidade\\Microsservices\\Softdesign.CoP.Observability\\src\\Softdesign.CoP.Observability.Bff\\Softdesign.CoP.Observability.Bff.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\bruno.ferraz\\.nuget\\packages\\carter\\9.0.0\\carter.9.0.0.nupkg.sha512",
     "C:\\Users\\bruno.ferraz\\.nuget\\packages\\carter.analyzers\\9.0.0\\carter.analyzers.9.0.0.nupkg.sha512",
@@ -35,9 +35,9 @@
       "code": "NU1904",
       "level": "Warning",
       "message": "Package 'Refit' 7.0.0 has a known critical severity vulnerability, https://github.com/advisories/GHSA-3hxg-fxwm-8gf7",
-      "projectPath": "c:\\Estudos\\POC Observabilidade\\Microsservices\\Softdesign.CoP.Observability\\src\\Softdesign.CoP.Observability.Bff\\Softdesign.CoP.Observability.Bff.csproj",
+      "projectPath": "C:\\Estudos\\POC Observabilidade\\Microsservices\\Softdesign.CoP.Observability\\src\\Softdesign.CoP.Observability.Bff\\Softdesign.CoP.Observability.Bff.csproj",
       "warningLevel": 1,
-      "filePath": "c:\\Estudos\\POC Observabilidade\\Microsservices\\Softdesign.CoP.Observability\\src\\Softdesign.CoP.Observability.Bff\\Softdesign.CoP.Observability.Bff.csproj",
+      "filePath": "C:\\Estudos\\POC Observabilidade\\Microsservices\\Softdesign.CoP.Observability\\src\\Softdesign.CoP.Observability.Bff\\Softdesign.CoP.Observability.Bff.csproj",
       "libraryId": "Refit",
       "targetGraphs": [
         "net9.0"

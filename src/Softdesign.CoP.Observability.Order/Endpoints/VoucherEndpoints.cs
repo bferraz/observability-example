@@ -1,4 +1,5 @@
 using Carter;
+using Microsoft.AspNetCore.Http;
 using Softdesign.CoP.Observability.Order.Domain;
 using Softdesign.CoP.Observability.Order.Service;
 
@@ -62,6 +63,18 @@ namespace Softdesign.CoP.Observability.Order.Endpoints
             .WithSummary("Remove um voucher.")
             .WithDescription("Remove um voucher do sistema pelo seu identificador.")
             .Produces(StatusCodes.Status204NoContent)
+            .WithTags("Vouchers");
+
+            app.MapGet("/vouchers/code/{code}", async (string code, VoucherService service) =>
+            {
+                var voucher = await service.GetByCodeAsync(code);
+                return voucher is not null ? Results.Ok(voucher) : Results.NotFound();
+            })
+            .WithName("GetVoucherByCode")
+            .WithSummary("Busca voucher por código.")
+            .WithDescription("Retorna um voucher específico pelo seu código.")
+            .Produces(StatusCodes.Status200OK)
+            .Produces(StatusCodes.Status404NotFound)
             .WithTags("Vouchers");
         }
     }

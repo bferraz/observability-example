@@ -1,9 +1,8 @@
 using Carter;
-using System.Net;
-using Softdesign.CoP.Observability.Bff.Models;
 using Softdesign.CoP.Observability.Bff.Requests;
 using Softdesign.CoP.Observability.Bff.Responses;
 using Softdesign.CoP.Observability.Bff.Contracts.Endpoints;
+using Softdesign.CoP.Observability.Bff.DTO;
 
 namespace Softdesign.CoP.Observability.Bff.Endpoints
 {
@@ -19,7 +18,8 @@ namespace Softdesign.CoP.Observability.Bff.Endpoints
                     return Results.BadRequest(new PurchaseResponse { Message = "Carrinho vazio." });
                 }
 
-                // Verifica estoque
+                // Verifica estoque e armazena produtos
+                var products = new Dictionary<Guid, ProductDto>();
                 foreach (var item in basket)
                 {
                     var product = await orderApi.GetProductByIdAsync(item.ProductId);
@@ -31,18 +31,16 @@ namespace Softdesign.CoP.Observability.Bff.Endpoints
                     {
                         return Results.BadRequest(new PurchaseResponse { Message = $"Estoque insuficiente para '{item.ProductName}'." });
                     }
+                    products[item.ProductId] = product;
                 }
 
-                // Atualiza estoque
-                foreach (var item in basket)
-                {
-                    var product = await orderApi.GetProductByIdAsync(item.ProductId);
-                    if (product != null)
-                    {
-                        product.QtdStock -= item.Quantity;
-                        await orderApi.UpdateProductAsync(product.Id, product);
-                    }
-                }
+                // Atualiza estoque usando os produtos já obtidos
+                // foreach (var item in basket)
+                // {
+                //     var product = products[item.ProductId];
+                //     product.QtdStock -= item.Quantity;
+                //     await orderApi.UpdateProductAsync(product.Id, product);
+                // }
 
                 decimal total = basket.Sum(i => i.Value * i.Quantity);
                 decimal discount = 0;
@@ -54,6 +52,8 @@ namespace Softdesign.CoP.Observability.Bff.Endpoints
                         return Results.BadRequest(new PurchaseResponse { Message = "Voucher inválido ou expirado.", Total = total });
                     }
                     discount = total * (voucher.Discount / 100m);
+                    // Remove o voucher após uso
+                    //await orderApi.DeleteVoucherAsync(voucher.Id);
                 }
                 var finalTotal = Math.Max(0, total - discount);
                 return Results.Ok(new PurchaseResponse

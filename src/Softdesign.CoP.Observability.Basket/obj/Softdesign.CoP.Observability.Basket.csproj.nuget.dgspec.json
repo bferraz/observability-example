@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "c:\\Estudos\\POC Observabilidade\\Microsservices\\Softdesign.CoP.Observability\\src\\Softdesign.CoP.Observability.Basket\\Softdesign.CoP.Observability.Basket.csproj": {}
+    "C:\\Estudos\\POC Observabilidade\\Microsservices\\Softdesign.CoP.Observability\\src\\Softdesign.CoP.Observability.Basket\\Softdesign.CoP.Observability.Basket.csproj": {}
   },
   "projects": {
-    "c:\\Estudos\\POC Observabilidade\\Microsservices\\Softdesign.CoP.Observability\\src\\Softdesign.CoP.Observability.Basket\\Softdesign.CoP.Observability.Basket.csproj": {
+    "C:\\Estudos\\POC Observabilidade\\Microsservices\\Softdesign.CoP.Observability\\src\\Softdesign.CoP.Observability.Basket\\Softdesign.CoP.Observability.Basket.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "c:\\Estudos\\POC Observabilidade\\Microsservices\\Softdesign.CoP.Observability\\src\\Softdesign.CoP.Observability.Basket\\Softdesign.CoP.Observability.Basket.csproj",
+        "projectUniqueName": "C:\\Estudos\\POC Observabilidade\\Microsservices\\Softdesign.CoP.Observability\\src\\Softdesign.CoP.Observability.Basket\\Softdesign.CoP.Observability.Basket.csproj",
         "projectName": "Softdesign.CoP.Observability.Basket",
-        "projectPath": "c:\\Estudos\\POC Observabilidade\\Microsservices\\Softdesign.CoP.Observability\\src\\Softdesign.CoP.Observability.Basket\\Softdesign.CoP.Observability.Basket.csproj",
+        "projectPath": "C:\\Estudos\\POC Observabilidade\\Microsservices\\Softdesign.CoP.Observability\\src\\Softdesign.CoP.Observability.Basket\\Softdesign.CoP.Observability.Basket.csproj",
         "packagesPath": "C:\\Users\\bruno.ferraz\\.nuget\\packages\\",
-        "outputPath": "c:\\Estudos\\POC Observabilidade\\Microsservices\\Softdesign.CoP.Observability\\src\\Softdesign.CoP.Observability.Basket\\obj\\",
+        "outputPath": "C:\\Estudos\\POC Observabilidade\\Microsservices\\Softdesign.CoP.Observability\\src\\Softdesign.CoP.Observability.Basket\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

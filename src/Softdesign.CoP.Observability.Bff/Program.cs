@@ -14,7 +14,7 @@ builder.Services.AddRefitClient<IBasketApi>()
     .ConfigureHttpClient(c => c.BaseAddress = new Uri("http://localhost:5027")); // ajuste a porta conforme necessário
 
 builder.Services.AddRefitClient<IOrderApi>()
-    .ConfigureHttpClient(c => c.BaseAddress = new Uri("http://localhost:5002")); // ajuste a porta conforme necessário
+    .ConfigureHttpClient(c => c.BaseAddress = new Uri("http://localhost:5135")); // ajuste a porta conforme necessário
 
 var app = builder.Build();
 

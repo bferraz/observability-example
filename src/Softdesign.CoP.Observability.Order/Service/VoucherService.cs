@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Softdesign.CoP.Observability.Order.Domain;
 using Softdesign.CoP.Observability.Order.Infrastructure;
@@ -14,5 +15,10 @@ namespace Softdesign.CoP.Observability.Order.Service
         public Task AddAsync(Voucher voucher) => _repo.AddAsync(voucher);
         public Task UpdateAsync(Voucher voucher) => _repo.UpdateAsync(voucher);
         public Task DeleteAsync(Guid id) => _repo.DeleteAsync(id);
+        public async Task<Voucher?> GetByCodeAsync(string code)
+        {
+            var vouchers = await _repo.GetAllAsync();
+            return vouchers.FirstOrDefault(v => v.Code == code);
+        }
     }
 }

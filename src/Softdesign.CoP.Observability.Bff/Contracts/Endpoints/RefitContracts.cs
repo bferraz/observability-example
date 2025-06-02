@@ -16,7 +16,9 @@ namespace Softdesign.CoP.Observability.Bff.Contracts.Endpoints
         Task<ProductDto?> GetProductByIdAsync(Guid id);
         [Put("/products/{id}")]
         Task UpdateProductAsync(Guid id, ProductDto product);
-        [Get("/vouchers/{code}")]
+        [Get("/vouchers/code/{code}")]
         Task<VoucherDto?> GetVoucherByCodeAsync(string code);
+        [Delete("/vouchers/{id}")]
+        Task DeleteVoucherAsync(Guid id);
     }
 }
