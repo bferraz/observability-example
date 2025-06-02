@@ -12,7 +12,8 @@ namespace Softdesign.CoP.Observability.Order.Endpoints
                 .WithName("ListProducts")
                 .WithSummary("Lista todos os produtos.")
                 .WithDescription("Retorna todos os produtos cadastrados no sistema.")
-                .Produces<List<Product>>(StatusCodes.Status200OK, "application/json");
+                .Produces<List<Product>>(StatusCodes.Status200OK, "application/json")
+                .WithTags("Products");
 
             app.MapGet("/products/{id}", async (Guid id, ProductService service) =>
             {
@@ -23,7 +24,8 @@ namespace Softdesign.CoP.Observability.Order.Endpoints
             .WithSummary("Busca produto por Id.")
             .WithDescription("Retorna um produto específico pelo seu identificador.")
             .Produces<Product>(StatusCodes.Status200OK, "application/json")
-            .Produces(StatusCodes.Status404NotFound);
+            .Produces(StatusCodes.Status404NotFound)
+            .WithTags("Products");
 
             app.MapPost("/products", async (Product product, ProductService service) =>
             {
@@ -36,7 +38,8 @@ namespace Softdesign.CoP.Observability.Order.Endpoints
             .WithSummary("Cria um novo produto.")
             .WithDescription("Cria um novo produto no sistema. O Id pode ser informado para integração com outros sistemas, ou será gerado automaticamente.")
             .Accepts<Product>("application/json")
-            .Produces<Product>(StatusCodes.Status201Created, "application/json");
+            .Produces<Product>(StatusCodes.Status201Created, "application/json")
+            .WithTags("Products");
 
             app.MapPut("/products/{id}", async (Guid id, Product product, ProductService service) =>
             {
@@ -48,7 +51,8 @@ namespace Softdesign.CoP.Observability.Order.Endpoints
             .WithSummary("Atualiza um produto.")
             .WithDescription("Atualiza os dados de um produto existente.")
             .Accepts<Product>("application/json")
-            .Produces<Product>(StatusCodes.Status200OK, "application/json");
+            .Produces<Product>(StatusCodes.Status200OK, "application/json")
+            .WithTags("Products");
 
             app.MapDelete("/products/{id}", async (Guid id, ProductService service) =>
             {
@@ -58,7 +62,8 @@ namespace Softdesign.CoP.Observability.Order.Endpoints
             .WithName("DeleteProduct")
             .WithSummary("Remove um produto.")
             .WithDescription("Remove um produto do sistema pelo seu identificador.")
-            .Produces(StatusCodes.Status204NoContent);
+            .Produces(StatusCodes.Status204NoContent)
+            .WithTags("Products");
         }
     }
 }

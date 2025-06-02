@@ -1,13 +1,47 @@
 {
   "version": 2,
-  "dgSpecHash": "hD94jnV0KTI=",
+  "dgSpecHash": "vAivtXTcFDg=",
   "success": true,
-  "projectFilePath": "C:\\Estudos\\POC Observabilidade\\Microsservices\\Softdesign.CoP.Observability\\src\\Softdesign.CoP.Observability.Bff\\Softdesign.CoP.Observability.Bff.csproj",
+  "projectFilePath": "c:\\Estudos\\POC Observabilidade\\Microsservices\\Softdesign.CoP.Observability\\src\\Softdesign.CoP.Observability.Bff\\Softdesign.CoP.Observability.Bff.csproj",
   "expectedPackageFiles": [
+    "C:\\Users\\bruno.ferraz\\.nuget\\packages\\carter\\9.0.0\\carter.9.0.0.nupkg.sha512",
+    "C:\\Users\\bruno.ferraz\\.nuget\\packages\\carter.analyzers\\9.0.0\\carter.analyzers.9.0.0.nupkg.sha512",
+    "C:\\Users\\bruno.ferraz\\.nuget\\packages\\fluentvalidation\\11.11.0\\fluentvalidation.11.11.0.nupkg.sha512",
     "C:\\Users\\bruno.ferraz\\.nuget\\packages\\microsoft.aspnetcore.openapi\\9.0.5\\microsoft.aspnetcore.openapi.9.0.5.nupkg.sha512",
+    "C:\\Users\\bruno.ferraz\\.nuget\\packages\\microsoft.codeanalysis.analyzers\\3.3.4\\microsoft.codeanalysis.analyzers.3.3.4.nupkg.sha512",
+    "C:\\Users\\bruno.ferraz\\.nuget\\packages\\microsoft.codeanalysis.common\\4.11.0\\microsoft.codeanalysis.common.4.11.0.nupkg.sha512",
+    "C:\\Users\\bruno.ferraz\\.nuget\\packages\\microsoft.codeanalysis.csharp\\4.11.0\\microsoft.codeanalysis.csharp.4.11.0.nupkg.sha512",
+    "C:\\Users\\bruno.ferraz\\.nuget\\packages\\microsoft.extensions.dependencyinjection\\7.0.0\\microsoft.extensions.dependencyinjection.7.0.0.nupkg.sha512",
+    "C:\\Users\\bruno.ferraz\\.nuget\\packages\\microsoft.extensions.dependencyinjection.abstractions\\7.0.0\\microsoft.extensions.dependencyinjection.abstractions.7.0.0.nupkg.sha512",
+    "C:\\Users\\bruno.ferraz\\.nuget\\packages\\microsoft.extensions.dependencymodel\\9.0.0\\microsoft.extensions.dependencymodel.9.0.0.nupkg.sha512",
+    "C:\\Users\\bruno.ferraz\\.nuget\\packages\\microsoft.extensions.http\\7.0.0\\microsoft.extensions.http.7.0.0.nupkg.sha512",
+    "C:\\Users\\bruno.ferraz\\.nuget\\packages\\microsoft.extensions.logging\\7.0.0\\microsoft.extensions.logging.7.0.0.nupkg.sha512",
+    "C:\\Users\\bruno.ferraz\\.nuget\\packages\\microsoft.extensions.logging.abstractions\\7.0.0\\microsoft.extensions.logging.abstractions.7.0.0.nupkg.sha512",
+    "C:\\Users\\bruno.ferraz\\.nuget\\packages\\microsoft.extensions.options\\7.0.0\\microsoft.extensions.options.7.0.0.nupkg.sha512",
+    "C:\\Users\\bruno.ferraz\\.nuget\\packages\\microsoft.extensions.primitives\\7.0.0\\microsoft.extensions.primitives.7.0.0.nupkg.sha512",
     "C:\\Users\\bruno.ferraz\\.nuget\\packages\\microsoft.openapi\\1.6.17\\microsoft.openapi.1.6.17.nupkg.sha512",
     "C:\\Users\\bruno.ferraz\\.nuget\\packages\\microsoft.visualstudio.azure.containers.tools.targets\\1.22.1-preview.1\\microsoft.visualstudio.azure.containers.tools.targets.1.22.1-preview.1.nupkg.sha512",
-    "C:\\Users\\bruno.ferraz\\.nuget\\packages\\swashbuckle.aspnetcore.swaggerui\\8.1.2\\swashbuckle.aspnetcore.swaggerui.8.1.2.nupkg.sha512"
+    "C:\\Users\\bruno.ferraz\\.nuget\\packages\\refit\\7.0.0\\refit.7.0.0.nupkg.sha512",
+    "C:\\Users\\bruno.ferraz\\.nuget\\packages\\refit.httpclientfactory\\7.0.0\\refit.httpclientfactory.7.0.0.nupkg.sha512",
+    "C:\\Users\\bruno.ferraz\\.nuget\\packages\\swashbuckle.aspnetcore.swaggerui\\8.1.2\\swashbuckle.aspnetcore.swaggerui.8.1.2.nupkg.sha512",
+    "C:\\Users\\bruno.ferraz\\.nuget\\packages\\system.collections.immutable\\8.0.0\\system.collections.immutable.8.0.0.nupkg.sha512",
+    "C:\\Users\\bruno.ferraz\\.nuget\\packages\\system.net.http.json\\7.0.1\\system.net.http.json.7.0.1.nupkg.sha512",
+    "C:\\Users\\bruno.ferraz\\.nuget\\packages\\system.reflection.metadata\\8.0.0\\system.reflection.metadata.8.0.0.nupkg.sha512",
+    "C:\\Users\\bruno.ferraz\\.nuget\\packages\\system.text.encodings.web\\7.0.0\\system.text.encodings.web.7.0.0.nupkg.sha512",
+    "C:\\Users\\bruno.ferraz\\.nuget\\packages\\system.text.json\\7.0.3\\system.text.json.7.0.3.nupkg.sha512"
   ],
-  "logs": []
+  "logs": [
+    {
+      "code": "NU1904",
+      "level": "Warning",
+      "message": "Package 'Refit' 7.0.0 has a known critical severity vulnerability, https://github.com/advisories/GHSA-3hxg-fxwm-8gf7",
+      "projectPath": "c:\\Estudos\\POC Observabilidade\\Microsservices\\Softdesign.CoP.Observability\\src\\Softdesign.CoP.Observability.Bff\\Softdesign.CoP.Observability.Bff.csproj",
+      "warningLevel": 1,
+      "filePath": "c:\\Estudos\\POC Observabilidade\\Microsservices\\Softdesign.CoP.Observability\\src\\Softdesign.CoP.Observability.Bff\\Softdesign.CoP.Observability.Bff.csproj",
+      "libraryId": "Refit",
+      "targetGraphs": [
+        "net9.0"
+      ]
+    }
+  ]
 }
