@@ -12,14 +12,24 @@ namespace Softdesign.CoP.Observability.Basket.Service
             _repository = repository;
         }
 
-        public Task InsertOrUpdateAsync(BasketItem item)
+        public Task InsertOrUpdateAsync(Basket.Domain.Basket basket)
         {
-            return _repository.InsertOrUpdateAsync(item);
+            return _repository.InsertOrUpdateAsync(basket);
         }
 
-        public Task<List<BasketItem>> ListAsync()
+        public Task<Basket.Domain.Basket?> GetBasketAsync()
         {
-            return _repository.ListAsync();
+            return _repository.GetBasketAsync();
+        }
+
+        public async Task<Basket.Domain.Basket?> GetBasketAsync(Guid id)
+        {
+            return await _repository.GetBasketAsync(id);
+        }
+
+        public async Task DeleteAsync(Guid id)
+        {
+            await _repository.DeleteAsync(id);
         }
     }
 }

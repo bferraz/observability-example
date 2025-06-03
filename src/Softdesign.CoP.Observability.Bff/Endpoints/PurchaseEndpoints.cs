@@ -1,8 +1,10 @@
 using Carter;
+using Refit;
 using Softdesign.CoP.Observability.Bff.Requests;
 using Softdesign.CoP.Observability.Bff.Responses;
 using Softdesign.CoP.Observability.Bff.Contracts.Endpoints;
-using Softdesign.CoP.Observability.Bff.DTO;
+using Softdesign.CoP.Observability.Bff.Models;
+using System.Net;
 
 namespace Softdesign.CoP.Observability.Bff.Endpoints
 {
@@ -10,52 +12,68 @@ namespace Softdesign.CoP.Observability.Bff.Endpoints
     {
         public void AddRoutes(IEndpointRouteBuilder app)
         {
-            app.MapPost("/purchase", async (PurchaseRequest request, IBasketApi basketApi, IOrderApi orderApi) =>
+            app.MapPost("/purchase", async (Softdesign.CoP.Observability.Bff.Requests.PurchaseRequest request, IBasketApi basketApi, IOrderApi orderApi) =>
             {
-                var basket = await basketApi.GetBasketAsync();
-                if (basket == null || basket.Count == 0)
-                {
-                    return Results.BadRequest(new PurchaseResponse { Message = "Carrinho vazio." });
-                }
-
+                if (request.UserId == Guid.Empty)                
+                    return Results.BadRequest("Id do usuário é obrigatório.");
+                
+                var basket = await basketApi.GetBasketAsync(request.UserId);
+                if (basket == null || basket.Items == null || basket.Items.Count == 0)                
+                    return Results.BadRequest("Carrinho vazio.");
+                
                 // Verifica estoque e armazena produtos
-                var products = new Dictionary<Guid, ProductDto>();
-                foreach (var item in basket)
+                var products = new Dictionary<Guid, DTO.ProductDto>();
+                
+                foreach (var item in basket.Items)
                 {
                     var product = await orderApi.GetProductByIdAsync(item.ProductId);
                     if (product == null)
-                    {
-                        return Results.BadRequest(new PurchaseResponse { Message = $"Produto '{item.ProductName}' não encontrado." });
-                    }
+                        return Results.BadRequest($"Produto '{item.ProductName}' não encontrado.");
+
                     if (product.QtdStock < item.Quantity)
-                    {
-                        return Results.BadRequest(new PurchaseResponse { Message = $"Estoque insuficiente para '{item.ProductName}'." });
-                    }
+                        return Results.BadRequest($"Estoque insuficiente para '{item.ProductName}'.");
+
                     products[item.ProductId] = product;
                 }
 
-                // Atualiza estoque usando os produtos já obtidos
-                // foreach (var item in basket)
-                // {
-                //     var product = products[item.ProductId];
-                //     product.QtdStock -= item.Quantity;
-                //     await orderApi.UpdateProductAsync(product.Id, product);
-                // }
-
-                decimal total = basket.Sum(i => i.Value * i.Quantity);
+                decimal total = basket.Items.Sum(i => i.Value * i.Quantity);
                 decimal discount = 0;
+
                 if (!string.IsNullOrWhiteSpace(request.VoucherCode))
                 {
-                    var voucher = await orderApi.GetVoucherByCodeAsync(request.VoucherCode);
-                    if (voucher == null || voucher.ExpiryDate < DateTime.UtcNow)
+                    VoucherDto? voucher;
+
+                    try
                     {
-                        return Results.BadRequest(new PurchaseResponse { Message = "Voucher inválido ou expirado.", Total = total });
+                        voucher = await orderApi.GetVoucherByCodeAsync(request.VoucherCode);
                     }
+                    catch (ApiException ex) when (ex.StatusCode == HttpStatusCode.NotFound)
+                    {
+                        return Results.NotFound("Voucher não encontrado.");
+                    }
+
+                    if (voucher == null || voucher.ExpiryDate < DateTime.UtcNow)                    
+                        return Results.BadRequest("Voucher inválido ou expirado.");                    
+
                     discount = total * (voucher.Discount / 100m);
+                    
                     // Remove o voucher após uso
-                    //await orderApi.DeleteVoucherAsync(voucher.Id);
+                    await orderApi.DeleteVoucherAsync(voucher.Id);
                 }
+
+                // Atualiza estoque usando os produtos já obtidos
+                foreach (var item in basket.Items)
+                {
+                    var product = products[item.ProductId];
+                    product.QtdStock -= item.Quantity;
+                    await orderApi.UpdateProductAsync(product.Id, product);
+                }
+
+                // Limpa o basket do usuário após a compra
+                await basketApi.DeleteBasketAsync(request.UserId);
+
                 var finalTotal = Math.Max(0, total - discount);
+
                 return Results.Ok(new PurchaseResponse
                 {
                     Total = total,

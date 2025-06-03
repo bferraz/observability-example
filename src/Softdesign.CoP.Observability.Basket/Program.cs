@@ -19,16 +19,24 @@ builder.Services.AddScoped<BasketService>();
 
 var app = builder.Build();
 
-// Pré-cadastro de itens no Redis com os mesmos Ids dos produtos de Order
+// Pré-cadastro de basket com os itens dos produtos
 using (var scope = app.Services.CreateScope())
 {
     var basketService = scope.ServiceProvider.GetRequiredService<BasketService>();
-    var existing = await basketService.ListAsync();
-    if (existing == null || !existing.Any())
+    var existing = await basketService.GetBasketAsync();
+    if (existing == null)
     {
-        await basketService.InsertOrUpdateAsync(new BasketItem { ProductId = Guid.Parse("3ef6f085-d567-4ba4-9368-e320a2b923a7"), ProductName = "Mouse", Quantity = 1, Value = 50 });
-        await basketService.InsertOrUpdateAsync(new BasketItem { ProductId = Guid.Parse("3fa85f64-5717-4562-b3fc-2c963f66afa6"), ProductName = "Monitor", Quantity = 1, Value = 1250 });
-        await basketService.InsertOrUpdateAsync(new BasketItem { ProductId = Guid.Parse("eef8e519-7b44-49fc-bf79-30729ce1fa1e"), ProductName = "Pentes de Memória", Quantity = 2, Value = 870 });
+        var basket = new Basket
+        {
+            Id = Guid.Parse("1b937427-adb8-4587-b4d4-0e5c143c4891"),
+            Items = new List<BasketItem>
+            {
+                new BasketItem { ProductId = Guid.Parse("3ef6f085-d567-4ba4-9368-e320a2b923a7"), ProductName = "Mouse", Quantity = 1, Value = 50 },
+                new BasketItem { ProductId = Guid.Parse("3fa85f64-5717-4562-b3fc-2c963f66afa6"), ProductName = "Monitor", Quantity = 1, Value = 1250 },
+                new BasketItem { ProductId = Guid.Parse("eef8e519-7b44-49fc-bf79-30729ce1fa1e"), ProductName = "Pentes de Memória", Quantity = 2, Value = 870 }
+            }
+        };
+        await basketService.InsertOrUpdateAsync(basket);
     }
 }
 

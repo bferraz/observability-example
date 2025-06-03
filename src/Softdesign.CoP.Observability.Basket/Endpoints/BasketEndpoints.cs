@@ -1,5 +1,4 @@
 ﻿using Carter;
-using Softdesign.CoP.Observability.Basket.Domain;
 using Softdesign.CoP.Observability.Basket.Service;
 
 namespace Softdesign.CoP.Observability.Basket.Endpoints
@@ -8,38 +7,51 @@ namespace Softdesign.CoP.Observability.Basket.Endpoints
     {
         public void AddRoutes(IEndpointRouteBuilder app)
         {
-            app.MapPost("/basket", async (BasketItem item, BasketService service) =>
+            app.MapPost("/basket", async (Domain.Basket basket, BasketService service) =>
             {
-                item.ProductId = Guid.NewGuid();
-                await service.InsertOrUpdateAsync(item);
-                return Results.Ok(item);
+                basket.Id = basket.Id == Guid.Empty ? Guid.NewGuid() : basket.Id;
+                await service.InsertOrUpdateAsync(basket);
+                return Results.Ok(basket);
             })
-            .WithName("CreateBasketItem")
-            .WithSummary("Cria um novo item no basket.")
-            .WithDescription("Cria um novo item no basket. O ProductId será gerado automaticamente pelo backend.")
+            .WithName("CreateBasket")
+            .WithSummary("Cria um novo basket.")
+            .WithDescription("Cria um novo basket com uma lista de itens.")
             .Produces(StatusCodes.Status200OK)
-            .Accepts<BasketItem>("application/json");
+            .Accepts<Domain.Basket>("application/json");
 
-            app.MapPut("/basket", async (BasketItem item, BasketService service) =>
+            app.MapPut("/basket", async (Domain.Basket basket, BasketService service) =>
             {
-                await service.InsertOrUpdateAsync(item);
+                await service.InsertOrUpdateAsync(basket);
                 return Results.Ok();
             })
-            .WithName("UpdateBasketItem")
-            .WithSummary("Atualiza um item existente no basket.")
-            .WithDescription("Atualiza um item existente no basket pelo ProductId.")
+            .WithName("UpdateBasket")
+            .WithSummary("Atualiza um basket existente.")
+            .WithDescription("Atualiza um basket existente pelo Id.")
             .Produces(StatusCodes.Status200OK)
-            .Accepts<BasketItem>("application/json");
+            .Accepts<Domain.Basket>("application/json");
 
-            app.MapGet("/basket", async (BasketService service) =>
+            app.MapGet("/basket/{id}", async (Guid id, BasketService service) =>
             {
-                var items = await service.ListAsync();
-                return Results.Ok(items);
+                var basket = await service.GetBasketAsync(id);
+                if (basket == null)
+                    return Results.NotFound();
+                return Results.Ok(basket);
             })
-            .WithName("ListBasketItems")
-            .WithSummary("Lista todos os itens do basket.")
-            .WithDescription("Retorna todos os itens cadastrados no basket.")
-            .Produces<List<BasketItem>>(StatusCodes.Status200OK, "application/json");
+            .WithName("GetBasket")
+            .WithSummary("Obtém o basket pelo Id.")
+            .WithDescription("Retorna o basket cadastrado pelo Id.")
+            .Produces<Domain.Basket>(StatusCodes.Status200OK, "application/json")
+            .Produces(StatusCodes.Status404NotFound);
+
+            app.MapDelete("/basket/{id}", async (Guid id, BasketService service) =>
+            {
+                await service.DeleteAsync(id);
+                return Results.NoContent();
+            })
+            .WithName("DeleteBasket")
+            .WithSummary("Remove um basket pelo Id.")
+            .WithDescription("Remove um basket do sistema pelo seu identificador.")
+            .Produces(StatusCodes.Status204NoContent);
         }
     }
 }

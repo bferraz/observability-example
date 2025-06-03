@@ -1,7 +1,4 @@
-using System.Collections.Generic;
 using System.Text.Json;
-using System.Threading.Tasks;
-using Softdesign.CoP.Observability.Basket.Domain;
 using StackExchange.Redis;
 
 namespace Softdesign.CoP.Observability.Basket.Infrastructure
@@ -9,30 +6,35 @@ namespace Softdesign.CoP.Observability.Basket.Infrastructure
     public class BasketRepository
     {
         private readonly IDatabase _db;
-        private const string BasketKey = "basket_items";
+        // Chave única para o basket
+        private const string BasketKey = "1b937427-adb8-4587-b4d4-0e5c143c4891";
 
         public BasketRepository(IRedisConnectionFactory redisConnectionFactory)
         {
             _db = redisConnectionFactory.GetConnection().GetDatabase();
         }
 
-        public async Task InsertOrUpdateAsync(BasketItem item)
+        public async Task InsertOrUpdateAsync(Basket.Domain.Basket basket)
         {
-            var value = JsonSerializer.Serialize(item);
-            await _db.HashSetAsync(BasketKey, item.ProductId.ToString(), value);
+            var value = JsonSerializer.Serialize(basket);
+            await _db.StringSetAsync(basket.Id.ToString(), value);
         }
 
-        public async Task<List<BasketItem>> ListAsync()
+        public async Task<Basket.Domain.Basket?> GetBasketAsync()
         {
-            var entries = await _db.HashGetAllAsync(BasketKey);
-            var list = new List<BasketItem>();
-            foreach (var entry in entries)
-            {
-                var item = JsonSerializer.Deserialize<BasketItem>(entry.Value!);
-                if (item != null)
-                    list.Add(item);
-            }
-            return list;
+            return await GetBasketAsync(Guid.Parse(BasketKey));
+        }
+
+        public async Task<Basket.Domain.Basket?> GetBasketAsync(Guid id)
+        {
+            var value = await _db.StringGetAsync(id.ToString());
+            if (value.IsNullOrEmpty) return null;
+            return JsonSerializer.Deserialize<Basket.Domain.Basket>(value!);
+        }
+
+        public async Task DeleteAsync(Guid id)
+        {
+            await _db.KeyDeleteAsync(id.ToString());
         }
     }
 }

@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Softdesign.CoP.Observability.Basket")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+73316975e402fd3cc3e538abc408869a52750ef7")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+cb56bb84f282f3d8a38b802735033590733ed81c")]
 [assembly: System.Reflection.AssemblyProductAttribute("Softdesign.CoP.Observability.Basket")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Softdesign.CoP.Observability.Basket")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

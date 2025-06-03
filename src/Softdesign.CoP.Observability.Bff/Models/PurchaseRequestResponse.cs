@@ -1,11 +1,3 @@
-namespace Softdesign.CoP.Observability.Bff.Requests
-{
-    public class PurchaseRequest
-    {
-        public string? VoucherCode { get; set; }
-    }
-}
-
 namespace Softdesign.CoP.Observability.Bff.Responses
 {
     public class PurchaseResponse
