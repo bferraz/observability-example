@@ -16,6 +16,8 @@ builder.Services.AddRefitClient<IBasketApi>()
 builder.Services.AddRefitClient<IOrderApi>()
     .ConfigureHttpClient(c => c.BaseAddress = new Uri("http://localhost:5135")); // ajuste a porta conforme necessário
 
+builder.Services.AddScoped<Softdesign.CoP.Observability.Bff.Services.IPurchaseService, Softdesign.CoP.Observability.Bff.Services.PurchaseService>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

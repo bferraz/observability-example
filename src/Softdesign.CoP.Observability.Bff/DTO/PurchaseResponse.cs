@@ -1,4 +1,4 @@
-namespace Softdesign.CoP.Observability.Bff.Responses
+namespace Softdesign.CoP.Observability.Bff.DTO
 {
     public class PurchaseResponse
     {

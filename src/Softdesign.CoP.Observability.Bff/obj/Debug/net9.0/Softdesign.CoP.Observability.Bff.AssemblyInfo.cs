@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Softdesign.CoP.Observability.Bff")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+cb56bb84f282f3d8a38b802735033590733ed81c")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+b29b55646d013f772f69e7230362710d571c743a")]
 [assembly: System.Reflection.AssemblyProductAttribute("Softdesign.CoP.Observability.Bff")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Softdesign.CoP.Observability.Bff")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

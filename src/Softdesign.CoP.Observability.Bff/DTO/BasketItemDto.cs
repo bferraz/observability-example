@@ -1,4 +1,4 @@
-namespace Softdesign.CoP.Observability.Bff.Models
+namespace Softdesign.CoP.Observability.Bff.DTO
 {
     public class BasketItemDto
     {

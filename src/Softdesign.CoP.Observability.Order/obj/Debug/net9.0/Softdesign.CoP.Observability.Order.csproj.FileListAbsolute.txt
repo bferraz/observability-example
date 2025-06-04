@@ -102,3 +102,4 @@ c:\Estudos\POC Observabilidade\Microsservices\Softdesign.CoP.Observability\src\S
 c:\Estudos\POC Observabilidade\Microsservices\Softdesign.CoP.Observability\src\Softdesign.CoP.Observability.Order\obj\Debug\net9.0\Softdesign.CoP.Observability.Order.pdb
 C:\Estudos\POC Observabilidade\Microsservices\Softdesign.CoP.Observability\src\Softdesign.CoP.Observability.Order\obj\Debug\net9.0\Softdesign.CoP.Observability.Order.genruntimeconfig.cache
 C:\Estudos\POC Observabilidade\Microsservices\Softdesign.CoP.Observability\src\Softdesign.CoP.Observability.Order\obj\Debug\net9.0\ref\Softdesign.CoP.Observability.Order.dll
+C:\Estudos\POC Observabilidade\Microsservices\Softdesign.CoP.Observability\src\Softdesign.CoP.Observability.Order\obj\Debug\net9.0\Softdesign.CoP.Observability.Order.sourcelink.json

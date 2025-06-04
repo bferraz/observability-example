@@ -61,3 +61,4 @@ c:\Estudos\POC Observabilidade\Microsservices\Softdesign.CoP.Observability\src\S
 c:\Estudos\POC Observabilidade\Microsservices\Softdesign.CoP.Observability\src\Softdesign.CoP.Observability.Basket\obj\Debug\net9.0\Softdesign.CoP.Observability.Basket.pdb
 c:\Estudos\POC Observabilidade\Microsservices\Softdesign.CoP.Observability\src\Softdesign.CoP.Observability.Basket\obj\Debug\net9.0\Softdesign.CoP.Observability.Basket.genruntimeconfig.cache
 c:\Estudos\POC Observabilidade\Microsservices\Softdesign.CoP.Observability\src\Softdesign.CoP.Observability.Basket\obj\Debug\net9.0\ref\Softdesign.CoP.Observability.Basket.dll
+C:\Estudos\POC Observabilidade\Microsservices\Softdesign.CoP.Observability\src\Softdesign.CoP.Observability.Basket\obj\Debug\net9.0\Softdesign.CoP.Observability.Basket.sourcelink.json
