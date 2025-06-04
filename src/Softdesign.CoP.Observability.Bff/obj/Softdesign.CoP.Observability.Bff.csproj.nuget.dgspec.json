@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Estudos\\POC Observabilidade\\Microsservices\\Softdesign.CoP.Observability\\src\\Softdesign.CoP.Observability.Bff\\Softdesign.CoP.Observability.Bff.csproj": {}
+    "c:\\Estudos\\POC Observabilidade\\Microsservices\\Softdesign.CoP.Observability\\src\\Softdesign.CoP.Observability.Bff\\Softdesign.CoP.Observability.Bff.csproj": {}
   },
   "projects": {
-    "C:\\Estudos\\POC Observabilidade\\Microsservices\\Softdesign.CoP.Observability\\src\\Softdesign.CoP.Observability.Bff\\Softdesign.CoP.Observability.Bff.csproj": {
+    "c:\\Estudos\\POC Observabilidade\\Microsservices\\Softdesign.CoP.Observability\\src\\Softdesign.CoP.Observability.Bff\\Softdesign.CoP.Observability.Bff.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Estudos\\POC Observabilidade\\Microsservices\\Softdesign.CoP.Observability\\src\\Softdesign.CoP.Observability.Bff\\Softdesign.CoP.Observability.Bff.csproj",
+        "projectUniqueName": "c:\\Estudos\\POC Observabilidade\\Microsservices\\Softdesign.CoP.Observability\\src\\Softdesign.CoP.Observability.Bff\\Softdesign.CoP.Observability.Bff.csproj",
         "projectName": "Softdesign.CoP.Observability.Bff",
-        "projectPath": "C:\\Estudos\\POC Observabilidade\\Microsservices\\Softdesign.CoP.Observability\\src\\Softdesign.CoP.Observability.Bff\\Softdesign.CoP.Observability.Bff.csproj",
+        "projectPath": "c:\\Estudos\\POC Observabilidade\\Microsservices\\Softdesign.CoP.Observability\\src\\Softdesign.CoP.Observability.Bff\\Softdesign.CoP.Observability.Bff.csproj",
         "packagesPath": "C:\\Users\\bruno.ferraz\\.nuget\\packages\\",
-        "outputPath": "C:\\Estudos\\POC Observabilidade\\Microsservices\\Softdesign.CoP.Observability\\src\\Softdesign.CoP.Observability.Bff\\obj\\",
+        "outputPath": "c:\\Estudos\\POC Observabilidade\\Microsservices\\Softdesign.CoP.Observability\\src\\Softdesign.CoP.Observability.Bff\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -61,6 +61,34 @@
             "Microsoft.VisualStudio.Azure.Containers.Tools.Targets": {
               "target": "Package",
               "version": "[1.22.1-Preview.1, )"
+            },
+            "OpenTelemetry": {
+              "target": "Package",
+              "version": "[1.12.0, )"
+            },
+            "OpenTelemetry.Exporter.Console": {
+              "target": "Package",
+              "version": "[1.12.0, )"
+            },
+            "OpenTelemetry.Exporter.OpenTelemetryProtocol": {
+              "target": "Package",
+              "version": "[1.12.0, )"
+            },
+            "OpenTelemetry.Extensions.Hosting": {
+              "target": "Package",
+              "version": "[1.8.1, )"
+            },
+            "OpenTelemetry.Instrumentation.AspNetCore": {
+              "target": "Package",
+              "version": "[1.12.0, )"
+            },
+            "OpenTelemetry.Instrumentation.Http": {
+              "target": "Package",
+              "version": "[1.12.0, )"
+            },
+            "OpenTelemetry.Instrumentation.Runtime": {
+              "target": "Package",
+              "version": "[1.12.0, )"
             },
             "Refit": {
               "target": "Package",

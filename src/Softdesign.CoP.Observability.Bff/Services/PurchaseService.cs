@@ -20,7 +20,7 @@ namespace Softdesign.CoP.Observability.Bff.Services
         public async Task<(bool Success, PurchaseResponse? Response, string? ErrorMessage)> ProcessPurchaseAsync(PurchaseRequest request)
         {
             if (request.UserId == Guid.Empty)
-                return (false, null, "Id do usuário é obrigatório.");
+                return (false, null, "Id do usuário é obrigatório.");            
 
             var basket = await GetBasketOrNull(request.UserId);
             if (basket == null || basket.Items == null || basket.Items.Count == 0)

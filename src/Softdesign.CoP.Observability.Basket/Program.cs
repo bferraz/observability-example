@@ -2,8 +2,20 @@ using Carter;
 using Softdesign.CoP.Observability.Basket.Domain;
 using Softdesign.CoP.Observability.Basket.Infrastructure;
 using Softdesign.CoP.Observability.Basket.Service;
+using OpenTelemetry.Trace;
+using OpenTelemetry.Metrics;
+using Serilog;
+using Serilog.Sinks.Grafana.Loki;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Configuração do Serilog para Loki
+Log.Logger = new LoggerConfiguration()
+    .WriteTo.Console()
+    .WriteTo.GrafanaLoki("http://localhost:3100")
+    .CreateLogger();
+
+builder.Host.UseSerilog();
 
 // Add services to the container.
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
@@ -16,6 +28,24 @@ var redisConnectionString = builder.Configuration.GetValue<string>("Redis:Connec
 builder.Services.AddSingleton<IRedisConnectionFactory>(sp => new RedisConnectionFactory(redisConnectionString));
 builder.Services.AddScoped<BasketRepository>();
 builder.Services.AddScoped<BasketService>();
+
+builder.Services.AddOpenTelemetry()
+    .WithTracing(tracing =>
+    {
+        tracing.AddAspNetCoreInstrumentation();
+        tracing.AddHttpClientInstrumentation();
+        tracing.AddOtlpExporter(options =>
+        {
+            options.Endpoint = new Uri("http://localhost:4317");
+            options.Protocol = OpenTelemetry.Exporter.OtlpExportProtocol.Grpc;
+        });
+    })
+    .WithMetrics(metrics =>
+    {
+        metrics.AddAspNetCoreInstrumentation();
+        metrics.AddHttpClientInstrumentation();
+        metrics.AddRuntimeInstrumentation();
+    });
 
 var app = builder.Build();
 

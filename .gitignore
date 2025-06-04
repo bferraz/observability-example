@@ -360,3 +360,12 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+
+# OpenTelemetry, observabilidade e ferramentas
+prometheus.yml
+promtail-config.yml
+tempo.yaml
+# Grafana/Prometheus/Loki/Tempo volumes
+loki/
+tempo/
+grafana_data/

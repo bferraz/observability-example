@@ -1,6 +1,11 @@
 using Carter;
 using Refit;
 using Softdesign.CoP.Observability.Bff.Contracts.Endpoints;
+using OpenTelemetry.Trace;
+using OpenTelemetry.Metrics;
+using OpenTelemetry.Instrumentation.AspNetCore;
+using OpenTelemetry.Instrumentation.Http;
+using OpenTelemetry.Instrumentation.Runtime;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,6 +22,24 @@ builder.Services.AddRefitClient<IOrderApi>()
     .ConfigureHttpClient(c => c.BaseAddress = new Uri("http://localhost:5135")); // ajuste a porta conforme necessário
 
 builder.Services.AddScoped<Softdesign.CoP.Observability.Bff.Services.IPurchaseService, Softdesign.CoP.Observability.Bff.Services.PurchaseService>();
+
+builder.Services.AddOpenTelemetry()
+    .WithTracing(tracing =>
+    {
+        tracing.AddAspNetCoreInstrumentation();
+        tracing.AddHttpClientInstrumentation();
+        tracing.AddOtlpExporter(options =>
+        {
+            options.Endpoint = new Uri("http://localhost:4317");
+            options.Protocol = OpenTelemetry.Exporter.OtlpExportProtocol.Grpc;
+        });
+    })
+    .WithMetrics(metrics =>
+    {
+        metrics.AddAspNetCoreInstrumentation();
+        metrics.AddHttpClientInstrumentation();
+        metrics.AddRuntimeInstrumentation();
+    });
 
 var app = builder.Build();
 

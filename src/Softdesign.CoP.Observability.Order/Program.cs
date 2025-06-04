@@ -3,6 +3,12 @@ using Microsoft.EntityFrameworkCore;
 using Softdesign.CoP.Observability.Order.Infrastructure;
 using Softdesign.CoP.Observability.Order.Service;
 using Softdesign.CoP.Observability.Order.Domain;
+using OpenTelemetry.Resources;
+using OpenTelemetry.Trace;
+using OpenTelemetry.Metrics;
+using OpenTelemetry.Instrumentation.AspNetCore;
+using OpenTelemetry.Instrumentation.Http;
+using OpenTelemetry.Instrumentation.Runtime;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,6 +25,23 @@ builder.Services.AddScoped<ProductService>();
 builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<VoucherService>();
 builder.Services.AddCarter();
+builder.Services.AddOpenTelemetry()
+    .WithTracing(tracing =>
+    {
+        tracing.AddAspNetCoreInstrumentation();
+        tracing.AddHttpClientInstrumentation();
+        tracing.AddOtlpExporter(options =>
+        {
+            options.Endpoint = new Uri("http://localhost:4317");
+            options.Protocol = OpenTelemetry.Exporter.OtlpExportProtocol.Grpc;
+        });
+    })
+    .WithMetrics(metrics =>
+    {
+        metrics.AddAspNetCoreInstrumentation();
+        metrics.AddHttpClientInstrumentation();
+        metrics.AddRuntimeInstrumentation();
+    });
 
 var app = builder.Build();
 
