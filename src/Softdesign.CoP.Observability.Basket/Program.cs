@@ -11,8 +11,9 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Configuração do Serilog para Loki
 Log.Logger = new LoggerConfiguration()
+    .MinimumLevel.Debug()
     .WriteTo.Console()
-    .WriteTo.GrafanaLoki("http://localhost:3100")
+    .WriteTo.GrafanaLoki("http://localhost:3100", labels: [new LokiLabel { Key = "app", Value = "Basket" }])
     .CreateLogger();
 
 builder.Host.UseSerilog();

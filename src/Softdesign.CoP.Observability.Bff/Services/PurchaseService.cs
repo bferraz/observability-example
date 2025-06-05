@@ -1,5 +1,7 @@
 using System.Net;
 using Refit;
+using Serilog;
+using Serilog.Context;
 using Softdesign.CoP.Observability.Bff.Contracts.Endpoints;
 using Softdesign.CoP.Observability.Bff.DTO;
 using Softdesign.CoP.Observability.Bff.Requests;
@@ -20,36 +22,55 @@ namespace Softdesign.CoP.Observability.Bff.Services
         public async Task<(bool Success, PurchaseResponse? Response, string? ErrorMessage)> ProcessPurchaseAsync(PurchaseRequest request)
         {
             if (request.UserId == Guid.Empty)
-                return (false, null, "Id do usuário é obrigatório.");            
+                return (false, null, "Id do usuário é obrigatório.");
 
-            var basket = await GetBasketOrNull(request.UserId);
-            if (basket == null || basket.Items == null || basket.Items.Count == 0)
-                return (false, null, _errorMessage ?? "Carrinho vazio.");
-
-            var products = await ValidateAndGetProducts(basket);
-            if (products == null)
-                return (false, null, _errorMessage);
-
-            decimal total = basket.Items.Sum(i => i.Value * i.Quantity);
-            decimal discount = 0;
-            if (!string.IsNullOrWhiteSpace(request.VoucherCode))
+            using (LogContext.PushProperty("UserId", request.UserId))
+            using (LogContext.PushProperty("RequestId", Guid.NewGuid().ToString()))
+            using (LogContext.PushProperty("RequestPath", "/purchase"))
+            using (LogContext.PushProperty("ConnectionId", System.Threading.Thread.CurrentThread.ManagedThreadId.ToString()))
             {
-                var voucherResult = await ValidateAndApplyVoucher(request.VoucherCode, total);
-                if (!voucherResult.Success)
-                    return (false, null, voucherResult.ErrorMessage);
-                discount = voucherResult.Discount;
+                Log.Information("Iniciando processamento de compra para usuário {UserId}", request.UserId);
+
+                var basket = await GetBasketOrNull(request.UserId);
+                if (basket == null || basket.Items == null || basket.Items.Count == 0)
+                {
+                    Log.Warning("Carrinho vazio ou não encontrado para usuário {UserId}", request.UserId);
+                    return (false, null, _errorMessage ?? "Carrinho vazio.");
+                }
+
+                var products = await ValidateAndGetProducts(basket);
+                if (products == null)
+                {
+                    Log.Warning("Falha na validação dos produtos para usuário {UserId}: {Error}", request.UserId, _errorMessage);
+                    return (false, null, _errorMessage);
+                }
+
+                decimal total = basket.Items.Sum(i => i.Value * i.Quantity);
+                decimal discount = 0;
+                if (!string.IsNullOrWhiteSpace(request.VoucherCode))
+                {
+                    var voucherResult = await ValidateAndApplyVoucher(request.VoucherCode, total);
+                    if (!voucherResult.Success)
+                    {
+                        Log.Warning("Voucher inválido para usuário {UserId}: {Error}", request.UserId, voucherResult.ErrorMessage);
+                        return (false, null, voucherResult.ErrorMessage);
+                    }
+                    discount = voucherResult.Discount;
+                }
+
+                await UpdateStockAndClearBasket(basket, products, request.UserId);
+                var finalTotal = Math.Max(0, total - discount);
+                var response = new PurchaseResponse
+                {
+                    Total = total,
+                    Discount = discount,
+                    FinalTotal = finalTotal,
+                    Message = discount > 0 ? "Desconto aplicado." : "Compra realizada com sucesso."
+                };
+                Log.Information("Compra finalizada para usuário {UserId} | Total: {Total} | Desconto: {Discount} | Final: {FinalTotal}",
+                    request.UserId, total, discount, finalTotal);
+                return (true, response, null);
             }
-
-            await UpdateStockAndClearBasket(basket, products, request.UserId);
-            var finalTotal = Math.Max(0, total - discount);
-            var response = new PurchaseResponse
-            {
-                Total = total,
-                Discount = discount,
-                FinalTotal = finalTotal,
-                Message = discount > 0 ? "Desconto aplicado." : "Compra realizada com sucesso."
-            };
-            return (true, response, null);
         }
 
         private string? _errorMessage;

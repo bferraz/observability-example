@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "tUsYbJ132cE=",
+  "dgSpecHash": "vHnozM6f6Yk=",
   "success": true,
-  "projectFilePath": "c:\\Estudos\\POC Observabilidade\\Microsservices\\Softdesign.CoP.Observability\\src\\Softdesign.CoP.Observability.Order\\Softdesign.CoP.Observability.Order.csproj",
+  "projectFilePath": "C:\\Estudos\\POC Observabilidade\\Microsservices\\Softdesign.CoP.Observability\\src\\Softdesign.CoP.Observability.Order\\Softdesign.CoP.Observability.Order.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\bruno.ferraz\\.nuget\\packages\\carter\\9.0.0\\carter.9.0.0.nupkg.sha512",
     "C:\\Users\\bruno.ferraz\\.nuget\\packages\\carter.analyzers\\9.0.0\\carter.analyzers.9.0.0.nupkg.sha512",
@@ -54,6 +54,16 @@
     "C:\\Users\\bruno.ferraz\\.nuget\\packages\\opentelemetry.instrumentation.aspnetcore\\1.12.0\\opentelemetry.instrumentation.aspnetcore.1.12.0.nupkg.sha512",
     "C:\\Users\\bruno.ferraz\\.nuget\\packages\\opentelemetry.instrumentation.http\\1.12.0\\opentelemetry.instrumentation.http.1.12.0.nupkg.sha512",
     "C:\\Users\\bruno.ferraz\\.nuget\\packages\\opentelemetry.instrumentation.runtime\\1.12.0\\opentelemetry.instrumentation.runtime.1.12.0.nupkg.sha512",
+    "C:\\Users\\bruno.ferraz\\.nuget\\packages\\serilog\\3.1.1\\serilog.3.1.1.nupkg.sha512",
+    "C:\\Users\\bruno.ferraz\\.nuget\\packages\\serilog.aspnetcore\\8.0.1\\serilog.aspnetcore.8.0.1.nupkg.sha512",
+    "C:\\Users\\bruno.ferraz\\.nuget\\packages\\serilog.extensions.hosting\\8.0.0\\serilog.extensions.hosting.8.0.0.nupkg.sha512",
+    "C:\\Users\\bruno.ferraz\\.nuget\\packages\\serilog.extensions.logging\\8.0.0\\serilog.extensions.logging.8.0.0.nupkg.sha512",
+    "C:\\Users\\bruno.ferraz\\.nuget\\packages\\serilog.formatting.compact\\2.0.0\\serilog.formatting.compact.2.0.0.nupkg.sha512",
+    "C:\\Users\\bruno.ferraz\\.nuget\\packages\\serilog.settings.configuration\\8.0.0\\serilog.settings.configuration.8.0.0.nupkg.sha512",
+    "C:\\Users\\bruno.ferraz\\.nuget\\packages\\serilog.sinks.console\\5.0.1\\serilog.sinks.console.5.0.1.nupkg.sha512",
+    "C:\\Users\\bruno.ferraz\\.nuget\\packages\\serilog.sinks.debug\\2.0.0\\serilog.sinks.debug.2.0.0.nupkg.sha512",
+    "C:\\Users\\bruno.ferraz\\.nuget\\packages\\serilog.sinks.file\\5.0.0\\serilog.sinks.file.5.0.0.nupkg.sha512",
+    "C:\\Users\\bruno.ferraz\\.nuget\\packages\\serilog.sinks.grafana.loki\\8.0.0\\serilog.sinks.grafana.loki.8.0.0.nupkg.sha512",
     "C:\\Users\\bruno.ferraz\\.nuget\\packages\\swashbuckle.aspnetcore.swaggerui\\8.1.4\\swashbuckle.aspnetcore.swaggerui.8.1.4.nupkg.sha512",
     "C:\\Users\\bruno.ferraz\\.nuget\\packages\\system.codedom\\6.0.0\\system.codedom.6.0.0.nupkg.sha512",
     "C:\\Users\\bruno.ferraz\\.nuget\\packages\\system.collections.immutable\\9.0.0\\system.collections.immutable.9.0.0.nupkg.sha512",
@@ -74,9 +84,9 @@
       "code": "NU1608",
       "level": "Warning",
       "message": "Detected package version outside of dependency constraint: Microsoft.CodeAnalysis.CSharp.Workspaces 4.8.0 requires Microsoft.CodeAnalysis.Common (= 4.8.0) but version Microsoft.CodeAnalysis.Common 4.14.0 was resolved.",
-      "projectPath": "c:\\Estudos\\POC Observabilidade\\Microsservices\\Softdesign.CoP.Observability\\src\\Softdesign.CoP.Observability.Order\\Softdesign.CoP.Observability.Order.csproj",
+      "projectPath": "C:\\Estudos\\POC Observabilidade\\Microsservices\\Softdesign.CoP.Observability\\src\\Softdesign.CoP.Observability.Order\\Softdesign.CoP.Observability.Order.csproj",
       "warningLevel": 1,
-      "filePath": "c:\\Estudos\\POC Observabilidade\\Microsservices\\Softdesign.CoP.Observability\\src\\Softdesign.CoP.Observability.Order\\Softdesign.CoP.Observability.Order.csproj",
+      "filePath": "C:\\Estudos\\POC Observabilidade\\Microsservices\\Softdesign.CoP.Observability\\src\\Softdesign.CoP.Observability.Order\\Softdesign.CoP.Observability.Order.csproj",
       "libraryId": "Microsoft.CodeAnalysis.Common",
       "targetGraphs": [
         "net9.0"
@@ -86,9 +96,9 @@
       "code": "NU1608",
       "level": "Warning",
       "message": "Detected package version outside of dependency constraint: Microsoft.CodeAnalysis.CSharp.Workspaces 4.8.0 requires Microsoft.CodeAnalysis.CSharp (= 4.8.0) but version Microsoft.CodeAnalysis.CSharp 4.11.0 was resolved.",
-      "projectPath": "c:\\Estudos\\POC Observabilidade\\Microsservices\\Softdesign.CoP.Observability\\src\\Softdesign.CoP.Observability.Order\\Softdesign.CoP.Observability.Order.csproj",
+      "projectPath": "C:\\Estudos\\POC Observabilidade\\Microsservices\\Softdesign.CoP.Observability\\src\\Softdesign.CoP.Observability.Order\\Softdesign.CoP.Observability.Order.csproj",
       "warningLevel": 1,
-      "filePath": "c:\\Estudos\\POC Observabilidade\\Microsservices\\Softdesign.CoP.Observability\\src\\Softdesign.CoP.Observability.Order\\Softdesign.CoP.Observability.Order.csproj",
+      "filePath": "C:\\Estudos\\POC Observabilidade\\Microsservices\\Softdesign.CoP.Observability\\src\\Softdesign.CoP.Observability.Order\\Softdesign.CoP.Observability.Order.csproj",
       "libraryId": "Microsoft.CodeAnalysis.CSharp",
       "targetGraphs": [
         "net9.0"
@@ -98,9 +108,9 @@
       "code": "NU1608",
       "level": "Warning",
       "message": "Detected package version outside of dependency constraint: Microsoft.CodeAnalysis.Workspaces.MSBuild 4.8.0 requires Microsoft.CodeAnalysis.Common (= 4.8.0) but version Microsoft.CodeAnalysis.Common 4.14.0 was resolved.",
-      "projectPath": "c:\\Estudos\\POC Observabilidade\\Microsservices\\Softdesign.CoP.Observability\\src\\Softdesign.CoP.Observability.Order\\Softdesign.CoP.Observability.Order.csproj",
+      "projectPath": "C:\\Estudos\\POC Observabilidade\\Microsservices\\Softdesign.CoP.Observability\\src\\Softdesign.CoP.Observability.Order\\Softdesign.CoP.Observability.Order.csproj",
       "warningLevel": 1,
-      "filePath": "c:\\Estudos\\POC Observabilidade\\Microsservices\\Softdesign.CoP.Observability\\src\\Softdesign.CoP.Observability.Order\\Softdesign.CoP.Observability.Order.csproj",
+      "filePath": "C:\\Estudos\\POC Observabilidade\\Microsservices\\Softdesign.CoP.Observability\\src\\Softdesign.CoP.Observability.Order\\Softdesign.CoP.Observability.Order.csproj",
       "libraryId": "Microsoft.CodeAnalysis.Common",
       "targetGraphs": [
         "net9.0"
@@ -110,9 +120,9 @@
       "code": "NU1608",
       "level": "Warning",
       "message": "Detected package version outside of dependency constraint: Microsoft.CodeAnalysis.CSharp 4.11.0 requires Microsoft.CodeAnalysis.Common (= 4.11.0) but version Microsoft.CodeAnalysis.Common 4.14.0 was resolved.",
-      "projectPath": "c:\\Estudos\\POC Observabilidade\\Microsservices\\Softdesign.CoP.Observability\\src\\Softdesign.CoP.Observability.Order\\Softdesign.CoP.Observability.Order.csproj",
+      "projectPath": "C:\\Estudos\\POC Observabilidade\\Microsservices\\Softdesign.CoP.Observability\\src\\Softdesign.CoP.Observability.Order\\Softdesign.CoP.Observability.Order.csproj",
       "warningLevel": 1,
-      "filePath": "c:\\Estudos\\POC Observabilidade\\Microsservices\\Softdesign.CoP.Observability\\src\\Softdesign.CoP.Observability.Order\\Softdesign.CoP.Observability.Order.csproj",
+      "filePath": "C:\\Estudos\\POC Observabilidade\\Microsservices\\Softdesign.CoP.Observability\\src\\Softdesign.CoP.Observability.Order\\Softdesign.CoP.Observability.Order.csproj",
       "libraryId": "Microsoft.CodeAnalysis.Common",
       "targetGraphs": [
         "net9.0"
@@ -122,9 +132,9 @@
       "code": "NU1608",
       "level": "Warning",
       "message": "Detected package version outside of dependency constraint: Microsoft.CodeAnalysis.Workspaces.Common 4.8.0 requires Microsoft.CodeAnalysis.Common (= 4.8.0) but version Microsoft.CodeAnalysis.Common 4.14.0 was resolved.",
-      "projectPath": "c:\\Estudos\\POC Observabilidade\\Microsservices\\Softdesign.CoP.Observability\\src\\Softdesign.CoP.Observability.Order\\Softdesign.CoP.Observability.Order.csproj",
+      "projectPath": "C:\\Estudos\\POC Observabilidade\\Microsservices\\Softdesign.CoP.Observability\\src\\Softdesign.CoP.Observability.Order\\Softdesign.CoP.Observability.Order.csproj",
       "warningLevel": 1,
-      "filePath": "c:\\Estudos\\POC Observabilidade\\Microsservices\\Softdesign.CoP.Observability\\src\\Softdesign.CoP.Observability.Order\\Softdesign.CoP.Observability.Order.csproj",
+      "filePath": "C:\\Estudos\\POC Observabilidade\\Microsservices\\Softdesign.CoP.Observability\\src\\Softdesign.CoP.Observability.Order\\Softdesign.CoP.Observability.Order.csproj",
       "libraryId": "Microsoft.CodeAnalysis.Common",
       "targetGraphs": [
         "net9.0"

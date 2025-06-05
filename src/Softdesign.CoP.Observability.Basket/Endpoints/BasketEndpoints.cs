@@ -1,4 +1,5 @@
 ﻿using Carter;
+using Serilog;
 using Softdesign.CoP.Observability.Basket.Service;
 
 namespace Softdesign.CoP.Observability.Basket.Endpoints
@@ -32,6 +33,8 @@ namespace Softdesign.CoP.Observability.Basket.Endpoints
 
             app.MapGet("/basket/{id}", async (Guid id, BasketService service) =>
             {
+                Log.Information("API Basket iniciada e Serilog configurado para Loki.");
+
                 var basket = await service.GetBasketAsync(id);
                 if (basket == null)
                     return Results.NotFound();

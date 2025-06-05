@@ -137,3 +137,13 @@ C:\Estudos\POC Observabilidade\Microsservices\Softdesign.CoP.Observability\src\S
 C:\Estudos\POC Observabilidade\Microsservices\Softdesign.CoP.Observability\src\Softdesign.CoP.Observability.Order\obj\Debug\net9.0\Softdesign.CoP.Observability.Order.pdb
 C:\Estudos\POC Observabilidade\Microsservices\Softdesign.CoP.Observability\src\Softdesign.CoP.Observability.Order\obj\Debug\net9.0\Softdesign.CoP.Observability.Order.genruntimeconfig.cache
 C:\Estudos\POC Observabilidade\Microsservices\Softdesign.CoP.Observability\src\Softdesign.CoP.Observability.Order\obj\Debug\net9.0\ref\Softdesign.CoP.Observability.Order.dll
+c:\Estudos\POC Observabilidade\Microsservices\Softdesign.CoP.Observability\src\Softdesign.CoP.Observability.Order\bin\Debug\net9.0\Serilog.dll
+c:\Estudos\POC Observabilidade\Microsservices\Softdesign.CoP.Observability\src\Softdesign.CoP.Observability.Order\bin\Debug\net9.0\Serilog.AspNetCore.dll
+c:\Estudos\POC Observabilidade\Microsservices\Softdesign.CoP.Observability\src\Softdesign.CoP.Observability.Order\bin\Debug\net9.0\Serilog.Extensions.Hosting.dll
+c:\Estudos\POC Observabilidade\Microsservices\Softdesign.CoP.Observability\src\Softdesign.CoP.Observability.Order\bin\Debug\net9.0\Serilog.Extensions.Logging.dll
+c:\Estudos\POC Observabilidade\Microsservices\Softdesign.CoP.Observability\src\Softdesign.CoP.Observability.Order\bin\Debug\net9.0\Serilog.Formatting.Compact.dll
+c:\Estudos\POC Observabilidade\Microsservices\Softdesign.CoP.Observability\src\Softdesign.CoP.Observability.Order\bin\Debug\net9.0\Serilog.Settings.Configuration.dll
+c:\Estudos\POC Observabilidade\Microsservices\Softdesign.CoP.Observability\src\Softdesign.CoP.Observability.Order\bin\Debug\net9.0\Serilog.Sinks.Console.dll
+c:\Estudos\POC Observabilidade\Microsservices\Softdesign.CoP.Observability\src\Softdesign.CoP.Observability.Order\bin\Debug\net9.0\Serilog.Sinks.Debug.dll
+c:\Estudos\POC Observabilidade\Microsservices\Softdesign.CoP.Observability\src\Softdesign.CoP.Observability.Order\bin\Debug\net9.0\Serilog.Sinks.File.dll
+c:\Estudos\POC Observabilidade\Microsservices\Softdesign.CoP.Observability\src\Softdesign.CoP.Observability.Order\bin\Debug\net9.0\Serilog.Sinks.Grafana.Loki.dll

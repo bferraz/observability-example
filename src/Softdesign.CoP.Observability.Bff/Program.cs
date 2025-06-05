@@ -3,11 +3,22 @@ using Refit;
 using Softdesign.CoP.Observability.Bff.Contracts.Endpoints;
 using OpenTelemetry.Trace;
 using OpenTelemetry.Metrics;
-using OpenTelemetry.Instrumentation.AspNetCore;
-using OpenTelemetry.Instrumentation.Http;
-using OpenTelemetry.Instrumentation.Runtime;
+using Serilog;
+using Serilog.Sinks.Grafana.Loki;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Configuração do Serilog para Loki com enriquecimento profissional
+Log.Logger = new LoggerConfiguration()
+    .MinimumLevel.Information()
+    .Enrich.FromLogContext()
+    .Enrich.WithProperty("Application", "Bff")
+    .Enrich.WithProperty("Environment", builder.Environment.EnvironmentName)    
+    .WriteTo.Console()
+    .WriteTo.GrafanaLoki("http://localhost:3100", labels: new[] { new Serilog.Sinks.Grafana.Loki.LokiLabel { Key = "app", Value = "Bff" } })
+    .CreateLogger();
+
+builder.Host.UseSerilog();
 
 // Add services to the container.
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
