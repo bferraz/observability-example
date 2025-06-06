@@ -2,6 +2,8 @@ using Carter;
 using Microsoft.AspNetCore.Http;
 using Softdesign.CoP.Observability.Order.Domain;
 using Softdesign.CoP.Observability.Order.Service;
+using Softdesign.CoP.Observability.Order.Helpers;
+using System.Diagnostics;
 
 namespace Softdesign.CoP.Observability.Order.Endpoints
 {
@@ -9,7 +11,12 @@ namespace Softdesign.CoP.Observability.Order.Endpoints
     {
         public void AddRoutes(IEndpointRouteBuilder app)
         {
-            app.MapGet("/vouchers", async (VoucherService service) => Results.Ok(await service.GetAllAsync()))
+            app.MapGet("/vouchers", async (VoucherService service) =>
+            {
+                var vouchers = await service.GetAllAsync();
+                Activity.Current.SetTagSafe("vouchers.count", vouchers?.Count.ToString());
+                return Results.Ok(vouchers);
+            })
                 .WithName("ListVouchers")
                 .WithSummary("Lista todos os vouchers.")
                 .WithDescription("Retorna todos os vouchers cadastrados no sistema.")
@@ -18,7 +25,9 @@ namespace Softdesign.CoP.Observability.Order.Endpoints
 
             app.MapGet("/vouchers/{id}", async (Guid id, VoucherService service) =>
             {
+                Activity.Current.SetTagSafe("voucher.id", id.ToString());
                 var voucher = await service.GetByIdAsync(id);
+                Activity.Current.SetTagSafe("voucher.found", (voucher != null).ToString());
                 return voucher is not null ? Results.Ok(voucher) : Results.NotFound();
             })
             .WithName("GetVoucher")
@@ -31,6 +40,8 @@ namespace Softdesign.CoP.Observability.Order.Endpoints
             app.MapPost("/vouchers", async (Voucher voucher, VoucherService service) =>
             {
                 voucher.Id = Guid.NewGuid();
+                Activity.Current.SetTagSafe("voucher.id", voucher.Id.ToString());
+                Activity.Current.SetTagSafe("voucher.code", voucher.Code);
                 await service.AddAsync(voucher);
                 return Results.Created($"/vouchers/{voucher.Id}", voucher);
             })
@@ -44,6 +55,8 @@ namespace Softdesign.CoP.Observability.Order.Endpoints
             app.MapPut("/vouchers/{id}", async (Guid id, Voucher voucher, VoucherService service) =>
             {
                 voucher.Id = id;
+                Activity.Current.SetTagSafe("voucher.id", id.ToString());
+                Activity.Current.SetTagSafe("voucher.code", voucher.Code);
                 await service.UpdateAsync(voucher);
                 return Results.Ok(voucher);
             })
@@ -56,6 +69,7 @@ namespace Softdesign.CoP.Observability.Order.Endpoints
 
             app.MapDelete("/vouchers/{id}", async (Guid id, VoucherService service) =>
             {
+                Activity.Current.SetTagSafe("voucher.id", id.ToString());
                 await service.DeleteAsync(id);
                 return Results.NoContent();
             })
@@ -67,7 +81,9 @@ namespace Softdesign.CoP.Observability.Order.Endpoints
 
             app.MapGet("/vouchers/code/{code}", async (string code, VoucherService service) =>
             {
+                Activity.Current.SetTagSafe("voucher.code", code);
                 var voucher = await service.GetByCodeAsync(code);
+                Activity.Current.SetTagSafe("voucher.found", (voucher != null).ToString());
                 return voucher is not null ? Results.Ok(voucher) : Results.NotFound();
             })
             .WithName("GetVoucherByCode")

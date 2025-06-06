@@ -1,4 +1,6 @@
 using Carter;
+using System.Diagnostics;
+using Softdesign.CoP.Observability.Bff.Helpers;
 using Softdesign.CoP.Observability.Bff.Requests;
 using Softdesign.CoP.Observability.Bff.DTO;
 using Softdesign.CoP.Observability.Bff.Services;
@@ -11,7 +13,24 @@ namespace Softdesign.CoP.Observability.Bff.Endpoints
         {
             app.MapPost("/purchase", async (PurchaseRequest request, IPurchaseService purchaseService) =>
             {
+                Activity.Current.SetTagSafe("purchase.request.userId", request.UserId.ToString());
+                Activity.Current.SetTagSafe("purchase.request.voucherCode", request.VoucherCode);
+
                 var (success, response, errorMessage) = await purchaseService.ProcessPurchaseAsync(request);
+
+                Activity.Current.SetTagSafe("purchase.success", success.ToString());
+                if (success && response != null)
+                {
+                    Activity.Current.SetTagSafe("purchase.response.total", response.Total.ToString());
+                    Activity.Current.SetTagSafe("purchase.response.discount", response.Discount.ToString());
+                    Activity.Current.SetTagSafe("purchase.response.finalTotal", response.FinalTotal.ToString());
+                    Activity.Current.SetTagSafe("purchase.response.message", response.Message);
+                }
+                else
+                {
+                    Activity.Current.SetTagSafe("purchase.error", errorMessage);
+                }
+
                 if (!success)
                     return Results.BadRequest(errorMessage);
                 return Results.Ok(response);

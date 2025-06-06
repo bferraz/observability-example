@@ -1,6 +1,9 @@
 using Carter;
 using Softdesign.CoP.Observability.Order.Domain;
 using Softdesign.CoP.Observability.Order.Service;
+using System.Text.Json;
+using System.Diagnostics;
+using Softdesign.CoP.Observability.Order.Helpers;
 
 namespace Softdesign.CoP.Observability.Order.Endpoints
 {
@@ -8,16 +11,25 @@ namespace Softdesign.CoP.Observability.Order.Endpoints
     {
         public void AddRoutes(IEndpointRouteBuilder app)
         {
-            app.MapGet("/users", async (UserService service) => Results.Ok(await service.GetAllAsync()))
-                .WithName("ListUsers")
-                .WithSummary("Lista todos os usuários.")
-                .WithDescription("Retorna todos os usuários cadastrados no sistema.")
-                .Produces<List<User>>(StatusCodes.Status200OK, "application/json")
-                .WithTags("Users");
+            app.MapGet("/users", async (UserService service) =>
+            {
+                var activity = Activity.Current;
+                var result = await service.GetAllAsync();
+                activity.SetTagSafe("response.body", JsonSerializer.Serialize(result));
+                return Results.Ok(result);
+            })
+            .WithName("ListUsers")
+            .WithSummary("Lista todos os usuários.")
+            .WithDescription("Retorna todos os usuários cadastrados no sistema.")
+            .Produces<List<User>>(StatusCodes.Status200OK, "application/json")
+            .WithTags("Users");
 
             app.MapGet("/users/{id}", async (Guid id, UserService service) =>
             {
+                var activity = Activity.Current;
+                activity.SetTagSafe("request.id", id.ToString());
                 var user = await service.GetByIdAsync(id);
+                activity.SetTagSafe("response.body", JsonSerializer.Serialize(user));
                 return user is not null ? Results.Ok(user) : Results.NotFound();
             })
             .WithName("GetUser")
@@ -29,8 +41,11 @@ namespace Softdesign.CoP.Observability.Order.Endpoints
 
             app.MapPost("/users", async (User user, UserService service) =>
             {
+                var activity = Activity.Current;
+                activity.SetTagSafe("request.body", JsonSerializer.Serialize(user));
                 user.Id = Guid.NewGuid();
                 await service.AddAsync(user);
+                activity.SetTagSafe("response.body", JsonSerializer.Serialize(user));
                 return Results.Created($"/users/{user.Id}", user);
             })
             .WithName("CreateUser")
@@ -42,8 +57,12 @@ namespace Softdesign.CoP.Observability.Order.Endpoints
 
             app.MapPut("/users/{id}", async (Guid id, User user, UserService service) =>
             {
+                var activity = Activity.Current;
+                activity.SetTagSafe("request.id", id.ToString());
+                activity.SetTagSafe("request.body", JsonSerializer.Serialize(user));
                 user.Id = id;
                 await service.UpdateAsync(user);
+                activity.SetTagSafe("response.body", JsonSerializer.Serialize(user));
                 return Results.Ok(user);
             })
             .WithName("UpdateUser")
@@ -55,7 +74,10 @@ namespace Softdesign.CoP.Observability.Order.Endpoints
 
             app.MapDelete("/users/{id}", async (Guid id, UserService service) =>
             {
+                var activity = Activity.Current;
+                activity.SetTagSafe("request.id", id.ToString());
                 await service.DeleteAsync(id);
+                activity.SetTagSafe("response.status", "204");
                 return Results.NoContent();
             })
             .WithName("DeleteUser")

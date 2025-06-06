@@ -7,6 +7,8 @@ using OpenTelemetry.Trace;
 using OpenTelemetry.Metrics;
 using Serilog;
 using Serilog.Sinks.Grafana.Loki;
+using OpenTelemetry.Resources;
+using System.Text.Json;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,7 +19,7 @@ Log.Logger = new LoggerConfiguration()
     .Enrich.WithProperty("Application", "Order")
     .Enrich.WithProperty("Environment", builder.Environment.EnvironmentName)    
     .WriteTo.Console()
-    .WriteTo.GrafanaLoki("http://localhost:3100", labels: new[] { new Serilog.Sinks.Grafana.Loki.LokiLabel { Key = "app", Value = "Order" } })
+    .WriteTo.GrafanaLoki("http://localhost:3100", labels: [new LokiLabel { Key = "app", Value = "Order" }])
     .CreateLogger();
 
 builder.Host.UseSerilog();
@@ -26,8 +28,12 @@ builder.Host.UseSerilog();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 
+// Configuração de logging detalhado para EF Core (queries SQL)
 builder.Services.AddDbContext<OrderDbContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"))
+           .EnableSensitiveDataLogging()
+           .LogTo(Log.Logger.Information, LogLevel.Information));
+
 builder.Services.AddScoped<ProductRepository>();
 builder.Services.AddScoped<UserRepository>();
 builder.Services.AddScoped<VoucherRepository>();
@@ -35,7 +41,10 @@ builder.Services.AddScoped<ProductService>();
 builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<VoucherService>();
 builder.Services.AddCarter();
+
 builder.Services.AddOpenTelemetry()
+    .ConfigureResource(resource => resource
+        .AddService("Order"))
     .WithTracing(tracing =>
     {
         tracing.AddAspNetCoreInstrumentation();

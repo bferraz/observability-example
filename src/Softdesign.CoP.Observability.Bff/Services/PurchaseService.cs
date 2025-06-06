@@ -26,7 +26,7 @@ namespace Softdesign.CoP.Observability.Bff.Services
            
             Log.Information("Iniciando processamento de compra para usuário {UserId}", request.UserId);
 
-            var basket = await GetBasketOrNull(request.UserId);
+            var basket = await GetBasket(request.UserId);
             if (basket == null || basket.Items == null || basket.Items.Count == 0)
             {
                 Log.Warning("Carrinho vazio ou não encontrado para usuário {UserId}", request.UserId);
@@ -69,7 +69,7 @@ namespace Softdesign.CoP.Observability.Bff.Services
 
         private string? _errorMessage;
 
-        private async Task<BasketDto?> GetBasketOrNull(Guid userId)
+        private async Task<BasketDto?> GetBasket(Guid userId)
         {
             try
             {

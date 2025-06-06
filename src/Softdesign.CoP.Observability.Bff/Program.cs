@@ -5,6 +5,8 @@ using OpenTelemetry.Trace;
 using OpenTelemetry.Metrics;
 using Serilog;
 using Serilog.Sinks.Grafana.Loki;
+using Softdesign.CoP.Observability.Bff.Services;
+using OpenTelemetry.Resources;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,7 +17,7 @@ Log.Logger = new LoggerConfiguration()
     .Enrich.WithProperty("Application", "Bff")
     .Enrich.WithProperty("Environment", builder.Environment.EnvironmentName)    
     .WriteTo.Console()
-    .WriteTo.GrafanaLoki("http://localhost:3100", labels: new[] { new Serilog.Sinks.Grafana.Loki.LokiLabel { Key = "app", Value = "Bff" } })
+    .WriteTo.GrafanaLoki("http://localhost:3100", labels: [new LokiLabel { Key = "app", Value = "Bff" }])
     .CreateLogger();
 
 builder.Host.UseSerilog();
@@ -32,9 +34,11 @@ builder.Services.AddRefitClient<IBasketApi>()
 builder.Services.AddRefitClient<IOrderApi>()
     .ConfigureHttpClient(c => c.BaseAddress = new Uri("http://localhost:5135")); // ajuste a porta conforme necessário
 
-builder.Services.AddScoped<Softdesign.CoP.Observability.Bff.Services.IPurchaseService, Softdesign.CoP.Observability.Bff.Services.PurchaseService>();
+builder.Services.AddScoped<IPurchaseService, PurchaseService>();
 
 builder.Services.AddOpenTelemetry()
+    .ConfigureResource(resource => resource
+        .AddService("Bff"))
     .WithTracing(tracing =>
     {
         tracing.AddAspNetCoreInstrumentation();

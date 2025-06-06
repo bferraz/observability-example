@@ -6,12 +6,16 @@ using OpenTelemetry.Trace;
 using OpenTelemetry.Metrics;
 using Serilog;
 using Serilog.Sinks.Grafana.Loki;
+using OpenTelemetry.Resources;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Configuração do Serilog para Loki
 Log.Logger = new LoggerConfiguration()
-    .MinimumLevel.Debug()
+    .MinimumLevel.Information()
+    .Enrich.FromLogContext()
+    .Enrich.WithProperty("Application", "Basket")
+    .Enrich.WithProperty("Environment", builder.Environment.EnvironmentName)        
     .WriteTo.Console()
     .WriteTo.GrafanaLoki("http://localhost:3100", labels: [new LokiLabel { Key = "app", Value = "Basket" }])
     .CreateLogger();
@@ -31,6 +35,8 @@ builder.Services.AddScoped<BasketRepository>();
 builder.Services.AddScoped<BasketService>();
 
 builder.Services.AddOpenTelemetry()
+    .ConfigureResource(resource => resource
+        .AddService("Basket"))
     .WithTracing(tracing =>
     {
         tracing.AddAspNetCoreInstrumentation();
