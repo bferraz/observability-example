@@ -11,28 +11,26 @@ namespace Softdesign.CoP.Observability.Bff.Endpoints
     {
         public void AddRoutes(IEndpointRouteBuilder app)
         {
-            app.MapPost("/purchase", async (PurchaseRequest request, IPurchaseService purchaseService) =>
+            app.MapPost("/purchase", async (PurchaseRequest request, IPurchaseService purchaseService, HttpContext httpContext) =>
             {
-                Activity.Current.SetTagSafe("purchase.request.userId", request.UserId.ToString());
-                Activity.Current.SetTagSafe("purchase.request.voucherCode", request.VoucherCode);
+                // Serializa o request como JSON e adiciona como tag
+                Activity.Current.SetTagSafe("purchase.request", System.Text.Json.JsonSerializer.Serialize(request));
+
+                // Captura o IP do usuário e adiciona como tag
+                var userIp = httpContext.Connection.RemoteIpAddress?.ToString();
+                Activity.Current.SetTagSafe("purchase.userIp", userIp);
 
                 var (success, response, errorMessage) = await purchaseService.ProcessPurchaseAsync(request);
 
                 Activity.Current.SetTagSafe("purchase.success", success.ToString());
                 if (success && response != null)
-                {
-                    Activity.Current.SetTagSafe("purchase.response.total", response.Total.ToString());
-                    Activity.Current.SetTagSafe("purchase.response.discount", response.Discount.ToString());
-                    Activity.Current.SetTagSafe("purchase.response.finalTotal", response.FinalTotal.ToString());
-                    Activity.Current.SetTagSafe("purchase.response.message", response.Message);
-                }
+                    Activity.Current.SetTagSafe("purchase.response", System.Text.Json.JsonSerializer.Serialize(response));
                 else
-                {
                     Activity.Current.SetTagSafe("purchase.error", errorMessage);
-                }
 
                 if (!success)
                     return Results.BadRequest(errorMessage);
+
                 return Results.Ok(response);
             })
             .WithName("Purchase")

@@ -7,6 +7,7 @@ using OpenTelemetry.Metrics;
 using Serilog;
 using Serilog.Sinks.Grafana.Loki;
 using OpenTelemetry.Resources;
+using OpenTelemetry.Exporter;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,9 +16,17 @@ Log.Logger = new LoggerConfiguration()
     .MinimumLevel.Information()
     .Enrich.FromLogContext()
     .Enrich.WithProperty("Application", "Basket")
-    .Enrich.WithProperty("Environment", builder.Environment.EnvironmentName)        
-    .WriteTo.Console()
-    .WriteTo.GrafanaLoki("http://localhost:3100", labels: [new LokiLabel { Key = "app", Value = "Basket" }])
+    .Enrich.WithProperty("Environment", builder.Environment.EnvironmentName)
+    .WriteTo.Logger(lc => lc
+        .Filter.ByExcluding(logEvent =>
+            logEvent.Properties.ContainsKey("RequestPath") &&
+            logEvent.Properties["RequestPath"].ToString().Contains("/metrics"))
+        .WriteTo.Console()
+        .WriteTo.GrafanaLoki("http://localhost:3100", labels: [
+            new LokiLabel { Key = "app", Value = "Basket" },
+            new LokiLabel { Key = "project", Value = "observability-poc" }
+        ])
+    )
     .CreateLogger();
 
 builder.Host.UseSerilog();
@@ -39,7 +48,11 @@ builder.Services.AddOpenTelemetry()
         .AddService("Basket"))
     .WithTracing(tracing =>
     {
-        tracing.AddAspNetCoreInstrumentation();
+        tracing.AddAspNetCoreInstrumentation(options =>
+        {
+            options.Filter = context =>
+                !context.Request.Path.StartsWithSegments("/metrics");
+        });
         tracing.AddHttpClientInstrumentation();
         tracing.AddOtlpExporter(options =>
         {
@@ -52,9 +65,13 @@ builder.Services.AddOpenTelemetry()
         metrics.AddAspNetCoreInstrumentation();
         metrics.AddHttpClientInstrumentation();
         metrics.AddRuntimeInstrumentation();
+        metrics.AddPrometheusExporter();
     });
 
 var app = builder.Build();
+
+// Middleware para expor /metrics para Prometheus
+app.UseOpenTelemetryPrometheusScrapingEndpoint();
 
 // Pré-cadastro de basket com os itens dos produtos
 using (var scope = app.Services.CreateScope())

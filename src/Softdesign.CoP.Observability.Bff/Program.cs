@@ -15,9 +15,17 @@ Log.Logger = new LoggerConfiguration()
     .MinimumLevel.Information()
     .Enrich.FromLogContext()
     .Enrich.WithProperty("Application", "Bff")
-    .Enrich.WithProperty("Environment", builder.Environment.EnvironmentName)    
-    .WriteTo.Console()
-    .WriteTo.GrafanaLoki("http://localhost:3100", labels: [new LokiLabel { Key = "app", Value = "Bff" }])
+    .Enrich.WithProperty("Environment", builder.Environment.EnvironmentName)
+    .WriteTo.Logger(lc => lc
+        .Filter.ByExcluding(logEvent =>
+            logEvent.Properties.ContainsKey("RequestPath") &&
+            logEvent.Properties["RequestPath"].ToString().Contains("/metrics"))
+        .WriteTo.Console()
+        .WriteTo.GrafanaLoki("http://localhost:3100", labels: [
+            new LokiLabel { Key = "app", Value = "Bff" },
+            new LokiLabel { Key = "project", Value = "observability-poc" }
+        ])
+    )
     .CreateLogger();
 
 builder.Host.UseSerilog();
@@ -41,7 +49,11 @@ builder.Services.AddOpenTelemetry()
         .AddService("Bff"))
     .WithTracing(tracing =>
     {
-        tracing.AddAspNetCoreInstrumentation();
+        tracing.AddAspNetCoreInstrumentation(options =>
+        {
+            options.Filter = context =>
+                !context.Request.Path.StartsWithSegments("/metrics");
+        });
         tracing.AddHttpClientInstrumentation();
         tracing.AddOtlpExporter(options =>
         {
@@ -54,6 +66,7 @@ builder.Services.AddOpenTelemetry()
         metrics.AddAspNetCoreInstrumentation();
         metrics.AddHttpClientInstrumentation();
         metrics.AddRuntimeInstrumentation();
+        metrics.AddPrometheusExporter();
     });
 
 var app = builder.Build();
@@ -70,5 +83,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.MapCarter();
+
+// Middleware para expor /metrics para Prometheus
+app.UseOpenTelemetryPrometheusScrapingEndpoint();
 
 app.Run();
