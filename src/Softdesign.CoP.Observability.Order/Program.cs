@@ -8,7 +8,6 @@ using OpenTelemetry.Metrics;
 using Serilog;
 using Serilog.Sinks.Grafana.Loki;
 using OpenTelemetry.Resources;
-using System.Text.Json;
 
 var builder = WebApplication.CreateBuilder(args);
 

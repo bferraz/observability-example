@@ -1,5 +1,4 @@
 using Carter;
-using OpenTelemetry.Trace;
 using Softdesign.CoP.Observability.Order.Domain;
 using Softdesign.CoP.Observability.Order.Service;
 using System.Text.Json;
