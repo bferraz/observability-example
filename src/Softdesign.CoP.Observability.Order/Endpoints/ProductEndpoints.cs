@@ -4,6 +4,8 @@ using Softdesign.CoP.Observability.Order.Service;
 using System.Text.Json;
 using System.Diagnostics;
 using Softdesign.CoP.Observability.Order.Helpers;
+using Serilog;
+using CorrelationId.Abstractions;
 
 namespace Softdesign.CoP.Observability.Order.Endpoints
 {
@@ -11,11 +13,19 @@ namespace Softdesign.CoP.Observability.Order.Endpoints
     {
         public void AddRoutes(IEndpointRouteBuilder app)
         {
-            app.MapGet("/products", async (ProductService service) =>
+            app.MapGet("/products", async (ProductService service, ICorrelationContextAccessor correlationContext) =>
             {
+                var correlationId = correlationContext.CorrelationContext.CorrelationId;
                 var activity = Activity.Current;
+
+                Log.Information("Iniciando busca de produtos - CorrelationId: {CorrelationId}", correlationId);
+
                 var result = await service.GetAllAsync();
                 activity.SetTagSafe("response.body", JsonSerializer.Serialize(result));
+
+                Log.Information("Busca de produtos concluída - {ProductCount} produtos encontrados - CorrelationId: {CorrelationId}",
+                    result.Count, correlationId);
+
                 return Results.Ok(result);
             })
             .WithName("ListProducts")
@@ -24,13 +34,27 @@ namespace Softdesign.CoP.Observability.Order.Endpoints
             .Produces<List<Product>>(StatusCodes.Status200OK, "application/json")
             .WithTags("Products");
 
-            app.MapGet("/products/{id}", async (Guid id, ProductService service) =>
+            app.MapGet("/products/{id}", async (Guid id, ProductService service, ICorrelationContextAccessor correlationContext) =>
             {
+                var correlationId = correlationContext.CorrelationContext.CorrelationId;
                 var activity = Activity.Current;
                 activity.SetTagSafe("request.id", id.ToString());
+
+                Log.Information("Buscando produto por ID: {ProductId} - CorrelationId: {CorrelationId}", id, correlationId);
+
                 var product = await service.GetByIdAsync(id);
                 activity.SetTagSafe("response.body", JsonSerializer.Serialize(product));
-                return product is not null ? Results.Ok(product) : Results.NotFound();
+
+                if (product is not null)
+                {
+                    Log.Information("Produto encontrado: {ProductName} - CorrelationId: {CorrelationId}", product.Name, correlationId);
+                    return Results.Ok(product);
+                }
+                else
+                {
+                    Log.Warning("Produto não encontrado para ID: {ProductId} - CorrelationId: {CorrelationId}", id, correlationId);
+                    return Results.NotFound();
+                }
             })
             .WithName("GetProduct")
             .WithSummary("Busca produto por Id.")

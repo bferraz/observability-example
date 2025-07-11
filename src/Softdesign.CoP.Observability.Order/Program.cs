@@ -8,24 +8,29 @@ using OpenTelemetry.Metrics;
 using Serilog;
 using Serilog.Sinks.Grafana.Loki;
 using OpenTelemetry.Resources;
+using CorrelationId;
+using CorrelationId.DependencyInjection;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Configuração do Serilog para Loki com enriquecimento profissional
+// Configuração do Serilog para Loki com enriquecimento profissional e Correlation ID
 Log.Logger = new LoggerConfiguration()
     .MinimumLevel.Information()
     .Enrich.FromLogContext()
+    .Enrich.WithCorrelationId()
     .Enrich.WithProperty("Application", "Order")
     .Enrich.WithProperty("Environment", builder.Environment.EnvironmentName)
     .WriteTo.Logger(lc => lc
         .Filter.ByExcluding(logEvent =>
             logEvent.Properties.ContainsKey("RequestPath") &&
             logEvent.Properties["RequestPath"].ToString().Contains("/metrics"))
-        .WriteTo.Console()
-        .WriteTo.GrafanaLoki("http://localhost:3100", labels: [
-            new LokiLabel { Key = "app", Value = "Order" },
-            new LokiLabel { Key = "project", Value = "observability-poc" }
-        ])
+        .WriteTo.Console(outputTemplate:
+            "[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj} {Properties:j}{NewLine}")
+        .WriteTo.GrafanaLoki("http://localhost:3100",
+            labels: [
+                new LokiLabel { Key = "app", Value = "Order" },
+                new LokiLabel { Key = "project", Value = "observability-poc" }
+            ])
     )
     .CreateLogger();
 
@@ -34,6 +39,18 @@ builder.Host.UseSerilog();
 // Add services to the container.
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
+
+// Configuração do Correlation ID
+builder.Services.AddDefaultCorrelationId(options =>
+{
+    options.CorrelationIdGenerator = () => Guid.NewGuid().ToString();
+    options.AddToLoggingScope = true;
+    options.EnforceHeader = false;
+    options.IgnoreRequestHeader = false;
+    options.IncludeInResponse = true;
+    options.RequestHeader = "X-Correlation-ID";
+    options.ResponseHeader = "X-Correlation-ID";
+});
 
 // Configuração de logging detalhado para EF Core (queries SQL)
 builder.Services.AddDbContext<OrderDbContext>(options =>
@@ -105,6 +122,9 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseOpenTelemetryPrometheusScrapingEndpoint();
+
+// Middleware do Correlation ID
+app.UseCorrelationId();
 
 app.MapCarter();
 
