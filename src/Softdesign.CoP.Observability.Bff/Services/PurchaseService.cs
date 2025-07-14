@@ -1,10 +1,12 @@
 using System.Net;
 using Refit;
 using Serilog;
-using Serilog.Context;
 using Softdesign.CoP.Observability.Bff.Contracts.Endpoints;
 using Softdesign.CoP.Observability.Bff.DTO;
 using Softdesign.CoP.Observability.Bff.Requests;
+using Softdesign.CoP.Observability.Bff.Metrics;
+using CorrelationId.Abstractions;
+using System.Diagnostics;
 
 namespace Softdesign.CoP.Observability.Bff.Services
 {
@@ -12,31 +14,51 @@ namespace Softdesign.CoP.Observability.Bff.Services
     {
         private readonly IBasketApi _basketApi;
         private readonly IOrderApi _orderApi;
+        private readonly BusinessMetrics _businessMetrics;
+        private readonly ICorrelationContextAccessor _correlationContextAccessor;
 
-        public PurchaseService(IBasketApi basketApi, IOrderApi orderApi)
+        public PurchaseService(IBasketApi basketApi, IOrderApi orderApi, BusinessMetrics businessMetrics, ICorrelationContextAccessor correlationContextAccessor)
         {
             _basketApi = basketApi;
             _orderApi = orderApi;
+            _businessMetrics = businessMetrics;
+            _correlationContextAccessor = correlationContextAccessor;
         }
 
         public async Task<(bool Success, PurchaseResponse? Response, string? ErrorMessage)> ProcessPurchaseAsync(PurchaseRequest request)
         {
+            var correlationId = _correlationContextAccessor.CorrelationContext?.CorrelationId ?? "unknown";
+            var stopwatch = Stopwatch.StartNew();
+
+            // Métrica: Incrementar requests totais
+            _businessMetrics.IncrementPurchaseRequests(correlationId, "premium");
+
             if (request.UserId == Guid.Empty)
-                return (false, null, "Id do usuário é obrigatório.");
-           
+            {
+                var errorMsg = "Id do usuário é obrigatório.";
+                _businessMetrics.IncrementPurchaseError(correlationId, "validation_error", errorMsg);
+                _businessMetrics.RecordPurchaseDuration(stopwatch.Elapsed.TotalSeconds, correlationId, "error");
+                return (false, null, errorMsg);
+            }
+
             Log.Information("Iniciando processamento de compra para usuário {UserId}", request.UserId);
 
             var basket = await GetBasket(request.UserId);
             if (basket == null || basket.Items == null || basket.Items.Count == 0)
             {
                 Log.Warning("Carrinho vazio ou não encontrado para usuário {UserId}", request.UserId);
-                return (false, null, _errorMessage ?? "Carrinho vazio.");
+                var errorMsg = _errorMessage ?? "Carrinho vazio.";
+                _businessMetrics.IncrementPurchaseError(correlationId, "empty_basket", errorMsg);
+                _businessMetrics.RecordPurchaseDuration(stopwatch.Elapsed.TotalSeconds, correlationId, "error");
+                return (false, null, errorMsg);
             }
 
             var products = await ValidateAndGetProducts(basket);
             if (products == null)
             {
                 Log.Warning("Falha na validação dos produtos para usuário {UserId}: {Error}", request.UserId, _errorMessage);
+                _businessMetrics.IncrementPurchaseError(correlationId, "product_validation", _errorMessage ?? "Erro de validação");
+                _businessMetrics.RecordPurchaseDuration(stopwatch.Elapsed.TotalSeconds, correlationId, "error");
                 return (false, null, _errorMessage);
             }
 
@@ -48,6 +70,8 @@ namespace Softdesign.CoP.Observability.Bff.Services
                 if (!voucherResult.Success)
                 {
                     Log.Warning("Voucher inválido para usuário {UserId}: {Error}", request.UserId, voucherResult.ErrorMessage);
+                    _businessMetrics.IncrementPurchaseError(correlationId, "invalid_voucher", voucherResult.ErrorMessage ?? "Voucher inválido");
+                    _businessMetrics.RecordPurchaseDuration(stopwatch.Elapsed.TotalSeconds, correlationId, "error");
                     return (false, null, voucherResult.ErrorMessage);
                 }
                 discount = voucherResult.Discount;
@@ -62,21 +86,30 @@ namespace Softdesign.CoP.Observability.Bff.Services
                 FinalTotal = finalTotal,
                 Message = discount > 0 ? "Desconto aplicado." : "Compra realizada com sucesso."
             };
+
+            // Métricas: Sucesso da compra
+            _businessMetrics.IncrementPurchaseSuccess(correlationId, (double)finalTotal, basket.Items.Count);
+            _businessMetrics.RecordPurchaseDuration(stopwatch.Elapsed.TotalSeconds, correlationId, "success");
+
             Log.Information("Compra finalizada para usuário {UserId} | Total: {Total} | Desconto: {Discount} | Final: {FinalTotal}",
                 request.UserId, total, discount, finalTotal);
-            return (true, response, null);            
+            return (true, response, null);
         }
 
         private string? _errorMessage;
 
         private async Task<BasketDto?> GetBasket(Guid userId)
         {
+            var correlationId = _correlationContextAccessor.CorrelationContext?.CorrelationId ?? "unknown";
             try
             {
-                return await _basketApi.GetBasketAsync(userId);
+                var result = await _basketApi.GetBasketAsync(userId);
+                _businessMetrics.IncrementBasketOperations("get_basket", correlationId, true);
+                return result;
             }
             catch (ApiException ex) when (ex.StatusCode == HttpStatusCode.NotFound)
             {
+                _businessMetrics.IncrementBasketOperations("get_basket", correlationId, false);
                 _errorMessage = "Carrinho não encontrado.";
                 return null;
             }
@@ -84,52 +117,99 @@ namespace Softdesign.CoP.Observability.Bff.Services
 
         private async Task<Dictionary<Guid, ProductDto>?> ValidateAndGetProducts(BasketDto basket)
         {
+            var correlationId = _correlationContextAccessor.CorrelationContext?.CorrelationId ?? "unknown";
             var products = new Dictionary<Guid, ProductDto>();
             foreach (var item in basket.Items)
             {
-                var product = await _orderApi.GetProductByIdAsync(item.ProductId);
-                if (product == null)
+                try
                 {
-                    _errorMessage = $"Produto '{item.ProductName}' não encontrado.";
-                    return null;
+                    var product = await _orderApi.GetProductByIdAsync(item.ProductId);
+                    _businessMetrics.IncrementOrderOperations("get_product", correlationId, true);
+
+                    if (product == null)
+                    {
+                        _errorMessage = $"Produto '{item.ProductName}' não encontrado.";
+                        return null;
+                    }
+                    if (product.QtdStock < item.Quantity)
+                    {
+                        _errorMessage = $"Estoque insuficiente para '{item.ProductName}'.";
+                        return null;
+                    }
+                    products[item.ProductId] = product;
                 }
-                if (product.QtdStock < item.Quantity)
+                catch (Exception)
                 {
-                    _errorMessage = $"Estoque insuficiente para '{item.ProductName}'.";
-                    return null;
+                    _businessMetrics.IncrementOrderOperations("get_product", correlationId, false);
+                    throw;
                 }
-                products[item.ProductId] = product;
             }
             return products;
         }
 
         private async Task<(bool Success, decimal Discount, string? ErrorMessage)> ValidateAndApplyVoucher(string voucherCode, decimal total)
         {
+            var correlationId = _correlationContextAccessor.CorrelationContext?.CorrelationId ?? "unknown";
             VoucherDto? voucher;
             try
             {
                 voucher = await _orderApi.GetVoucherByCodeAsync(voucherCode);
+                _businessMetrics.IncrementOrderOperations("get_voucher", correlationId, true);
             }
             catch (ApiException ex) when (ex.StatusCode == HttpStatusCode.NotFound)
             {
+                _businessMetrics.IncrementOrderOperations("get_voucher", correlationId, false);
                 return (false, 0, "Voucher não encontrado.");
             }
             if (voucher == null || voucher.ExpiryDate < DateTime.UtcNow)
                 return (false, 0, "Voucher inválido ou expirado.");
             var discount = total * (voucher.Discount / 100m);
-            await _orderApi.DeleteVoucherAsync(voucher.Id);
+
+            try
+            {
+                await _orderApi.DeleteVoucherAsync(voucher.Id);
+                _businessMetrics.IncrementOrderOperations("delete_voucher", correlationId, true);
+            }
+            catch (Exception)
+            {
+                _businessMetrics.IncrementOrderOperations("delete_voucher", correlationId, false);
+                throw;
+            }
+
             return (true, discount, null);
         }
 
         private async Task UpdateStockAndClearBasket(BasketDto basket, Dictionary<Guid, ProductDto> products, Guid userId)
         {
+            var correlationId = _correlationContextAccessor.CorrelationContext?.CorrelationId ?? "unknown";
+
             foreach (var item in basket.Items)
             {
                 var product = products[item.ProductId];
                 product.QtdStock -= item.Quantity;
-                await _orderApi.UpdateProductAsync(product.Id, product);
+
+                try
+                {
+                    await _orderApi.UpdateProductAsync(product.Id, product);
+                    _businessMetrics.IncrementOrderOperations("update_product", correlationId, true);
+                }
+                catch (Exception)
+                {
+                    _businessMetrics.IncrementOrderOperations("update_product", correlationId, false);
+                    throw;
+                }
             }
-            await _basketApi.DeleteBasketAsync(userId);
+
+            try
+            {
+                await _basketApi.DeleteBasketAsync(userId);
+                _businessMetrics.IncrementBasketOperations("delete_basket", correlationId, true);
+            }
+            catch (Exception)
+            {
+                _businessMetrics.IncrementBasketOperations("delete_basket", correlationId, false);
+                throw;
+            }
         }
     }
 }

@@ -10,6 +10,7 @@ using OpenTelemetry.Resources;
 using CorrelationId;
 using CorrelationId.DependencyInjection;
 using Softdesign.CoP.Observability.Bff.Helpers;
+using Softdesign.CoP.Observability.Bff.Metrics;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -52,6 +53,9 @@ builder.Services.AddRefitClient<IOrderApi>()
 
 builder.Services.AddScoped<IPurchaseService, PurchaseService>();
 
+// Registrar métricas de negócio
+builder.Services.AddSingleton<BusinessMetrics>();
+
 builder.Services.AddOpenTelemetry()
     .ConfigureResource(resource => resource
         .AddService("Bff"))
@@ -74,6 +78,7 @@ builder.Services.AddOpenTelemetry()
         metrics.AddAspNetCoreInstrumentation();
         metrics.AddHttpClientInstrumentation();
         metrics.AddRuntimeInstrumentation();
+        metrics.AddMeter("Softdesign.CoP.Observability.Bff.Business"); // Adicionar métricas de negócio
         metrics.AddPrometheusExporter();
     });
 

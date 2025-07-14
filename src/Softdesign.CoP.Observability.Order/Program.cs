@@ -10,6 +10,7 @@ using Serilog.Sinks.Grafana.Loki;
 using OpenTelemetry.Resources;
 using CorrelationId;
 using CorrelationId.DependencyInjection;
+using Softdesign.CoP.Observability.Order.Metrics;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -66,6 +67,9 @@ builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<VoucherService>();
 builder.Services.AddCarter();
 
+// Registrar métricas de negócio
+builder.Services.AddSingleton<OrderMetrics>();
+
 builder.Services.AddOpenTelemetry()
     .ConfigureResource(resource => resource
         .AddService("Order"))
@@ -88,6 +92,7 @@ builder.Services.AddOpenTelemetry()
         metrics.AddAspNetCoreInstrumentation();
         metrics.AddHttpClientInstrumentation();
         metrics.AddRuntimeInstrumentation();
+        metrics.AddMeter("Softdesign.CoP.Observability.Order.Business"); // Adicionar métricas de negócio
         metrics.AddPrometheusExporter();
     });
 
