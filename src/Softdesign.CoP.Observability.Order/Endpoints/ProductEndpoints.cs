@@ -3,7 +3,6 @@ using Softdesign.CoP.Observability.Order.Domain;
 using Softdesign.CoP.Observability.Order.Service;
 using System.Text.Json;
 using System.Diagnostics;
-using Softdesign.CoP.Observability.Order.Helpers;
 using Serilog;
 using CorrelationId.Abstractions;
 
@@ -21,7 +20,8 @@ namespace Softdesign.CoP.Observability.Order.Endpoints
                 Log.Information("Iniciando busca de produtos - CorrelationId: {CorrelationId}", correlationId);
 
                 var result = await service.GetAllAsync();
-                activity.SetTagSafe("response.body", JsonSerializer.Serialize(result));
+
+                activity?.SetTag("response.body", JsonSerializer.Serialize(result));
 
                 Log.Information("Busca de produtos concluída - {ProductCount} produtos encontrados - CorrelationId: {CorrelationId}",
                     result.Count, correlationId);
@@ -38,12 +38,13 @@ namespace Softdesign.CoP.Observability.Order.Endpoints
             {
                 var correlationId = correlationContext.CorrelationContext.CorrelationId;
                 var activity = Activity.Current;
-                activity.SetTagSafe("request.id", id.ToString());
+                activity?.SetTag("request.id", id.ToString());
 
                 Log.Information("Buscando produto por ID: {ProductId} - CorrelationId: {CorrelationId}", id, correlationId);
 
                 var product = await service.GetByIdAsync(id);
-                activity.SetTagSafe("response.body", JsonSerializer.Serialize(product));
+
+                activity?.SetTag("response.body", JsonSerializer.Serialize(product));
 
                 if (product is not null)
                 {
@@ -66,11 +67,15 @@ namespace Softdesign.CoP.Observability.Order.Endpoints
             app.MapPost("/products", async (Product product, ProductService service) =>
             {
                 var activity = Activity.Current;
-                activity.SetTagSafe("request.body", JsonSerializer.Serialize(product));
+                activity?.SetTag("request.body", JsonSerializer.Serialize(product));
+
                 if (product.Id == Guid.Empty)
                     product.Id = Guid.NewGuid();
+
                 await service.AddAsync(product);
-                activity.SetTagSafe("response.body", JsonSerializer.Serialize(product));
+
+                activity?.SetTag("response.body", JsonSerializer.Serialize(product));
+
                 return Results.Created($"/products/{product.Id}", product);
             })
             .WithName("CreateProduct")
@@ -83,11 +88,14 @@ namespace Softdesign.CoP.Observability.Order.Endpoints
             app.MapPut("/products/{id}", async (Guid id, Product product, ProductService service) =>
             {
                 var activity = Activity.Current;
-                activity.SetTagSafe("request.id", id.ToString());
-                activity.SetTagSafe("request.body", JsonSerializer.Serialize(product));
+                activity?.SetTag("request.id", id.ToString());
+                activity?.SetTag("request.body", JsonSerializer.Serialize(product));
+
                 product.Id = id;
                 await service.UpdateAsync(product);
-                activity.SetTagSafe("response.body", JsonSerializer.Serialize(product));
+
+                activity?.SetTag("response.body", JsonSerializer.Serialize(product));
+
                 return Results.Ok(product);
             })
             .WithName("UpdateProduct")
@@ -100,9 +108,12 @@ namespace Softdesign.CoP.Observability.Order.Endpoints
             app.MapDelete("/products/{id}", async (Guid id, ProductService service) =>
             {
                 var activity = Activity.Current;
-                activity.SetTagSafe("request.id", id.ToString());
+                activity?.SetTag("request.id", id.ToString());
+
                 await service.DeleteAsync(id);
-                activity.SetTagSafe("response.status", "204");
+
+                activity?.SetTag("response.status", "204");
+
                 return Results.NoContent();
             })
             .WithName("DeleteProduct")

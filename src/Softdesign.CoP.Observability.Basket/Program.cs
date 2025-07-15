@@ -9,7 +9,6 @@ using Serilog.Sinks.Grafana.Loki;
 using OpenTelemetry.Resources;
 using CorrelationId;
 using CorrelationId.DependencyInjection;
-using Softdesign.CoP.Observability.Basket.Metrics;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -59,9 +58,6 @@ var redisConnectionString = builder.Configuration.GetValue<string>("Redis:Connec
 builder.Services.AddSingleton<IRedisConnectionFactory>(sp => new RedisConnectionFactory(redisConnectionString));
 builder.Services.AddScoped<BasketRepository>();
 builder.Services.AddScoped<BasketService>();
-
-// Registrar métricas de negócio
-builder.Services.AddSingleton<BasketMetrics>();
 
 builder.Services.AddOpenTelemetry()
     .ConfigureResource(resource => resource

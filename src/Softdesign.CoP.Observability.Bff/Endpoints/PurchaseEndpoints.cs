@@ -14,19 +14,21 @@ namespace Softdesign.CoP.Observability.Bff.Endpoints
             app.MapPost("/purchase", async (PurchaseRequest request, IPurchaseService purchaseService, HttpContext httpContext) =>
             {
                 // Serializa o request como JSON e adiciona como tag
-                Activity.Current.SetTagSafe("purchase.request", System.Text.Json.JsonSerializer.Serialize(request));
+                Activity.Current?.SetTag("purchase.request", System.Text.Json.JsonSerializer.Serialize(request));
 
                 // Captura o IP do usuário e adiciona como tag
                 var userIp = httpContext.Connection.RemoteIpAddress?.ToString();
-                Activity.Current.SetTagSafe("purchase.userIp", userIp);
+                Activity.Current?.SetTag("purchase.userIp", userIp);
 
                 var (success, response, errorMessage) = await purchaseService.ProcessPurchaseAsync(request);
 
-                Activity.Current.SetTagSafe("purchase.success", success.ToString());
                 if (success && response != null)
-                    Activity.Current.SetTagSafe("purchase.response", System.Text.Json.JsonSerializer.Serialize(response));
+                {
+                    Activity.Current?.SetTag("purchase.success", success.ToString());
+                    Activity.Current?.SetTag("purchase.response", System.Text.Json.JsonSerializer.Serialize(response));
+                }
                 else
-                    Activity.Current.SetTagSafe("purchase.error", errorMessage);
+                    Activity.Current?.SetTag("purchase.error", errorMessage);
 
                 if (!success)
                     return Results.BadRequest(errorMessage);
