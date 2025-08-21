@@ -6,5 +6,6 @@ namespace Softdesign.CoP.Observability.Bff.Services
     public interface IPurchaseService
     {
         Task<(bool Success, PurchaseResponse? Response, string? ErrorMessage)> ProcessPurchaseAsync(PurchaseRequest request);
+        Task<string> GenerateRandomBusinessMetricsAsync();
     }
 }

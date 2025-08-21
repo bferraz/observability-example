@@ -1,6 +1,5 @@
 using Carter;
 using System.Diagnostics;
-using Softdesign.CoP.Observability.Bff.Helpers;
 using Softdesign.CoP.Observability.Bff.Requests;
 using Softdesign.CoP.Observability.Bff.DTO;
 using Softdesign.CoP.Observability.Bff.Services;
@@ -42,6 +41,46 @@ namespace Softdesign.CoP.Observability.Bff.Endpoints
             .Produces<PurchaseResponse>(StatusCodes.Status200OK, "application/json")
             .Produces<string>(StatusCodes.Status400BadRequest, "application/json")
             .WithTags("Purchase");
+
+            app.MapGet("/purchase/generate-metrics", async (IPurchaseService purchaseService, HttpContext httpContext) =>
+            {
+                // Adiciona informações sobre a geração de métricas no tracing
+                Activity.Current?.SetTag("metrics.generation", "random_business_metrics");
+                Activity.Current?.SetTag("metrics.source", "test_endpoint");
+
+                try
+                {
+                    var result = await purchaseService.GenerateRandomBusinessMetricsAsync();
+
+                    Activity.Current?.SetTag("metrics.generation.success", "true");
+                    Activity.Current?.SetTag("metrics.generation.count", result.Split('\n').Length - 1);
+
+                    return Results.Ok(new
+                    {
+                        success = true,
+                        message = "Random business metrics generated successfully",
+                        details = result
+                    });
+                }
+                catch (Exception ex)
+                {
+                    Activity.Current?.SetTag("metrics.generation.success", "false");
+                    Activity.Current?.SetTag("metrics.generation.error", ex.Message);
+
+                    return Results.BadRequest(new
+                    {
+                        success = false,
+                        message = "Failed to generate random metrics",
+                        error = ex.Message
+                    });
+                }
+            })
+            .WithName("GenerateRandomMetrics")
+            .WithSummary("Gera métricas de negócio aleatórias para testes.")
+            .WithDescription("Endpoint para gerar entre 50 a 100 métricas aleatórias contemplando todos os tipos disponíveis: purchase requests, success, e errors.")
+            .Produces(StatusCodes.Status200OK)
+            .Produces(StatusCodes.Status400BadRequest)
+            .WithTags("Testing");
         }
     }
 }

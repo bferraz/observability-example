@@ -88,7 +88,7 @@ builder.Services.AddOpenTelemetry()
         metrics.AddAspNetCoreInstrumentation();
         metrics.AddHttpClientInstrumentation();
         metrics.AddRuntimeInstrumentation();
-        metrics.AddMeter("Softdesign.CoP.Observability.Order.Business"); // Adicionar métricas de negócio
+        //metrics.AddMeter("Softdesign.CoP.Observability.Order.Business"); // Adicionar métricas de negócio
         metrics.AddPrometheusExporter();
     });
 

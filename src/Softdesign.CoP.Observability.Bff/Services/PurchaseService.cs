@@ -91,6 +91,56 @@ namespace Softdesign.CoP.Observability.Bff.Services
             return (true, response, null);
         }
 
+        public async Task<string> GenerateRandomBusinessMetricsAsync()
+        {
+            var random = new Random();
+            var metricsCount = random.Next(50, 101); // Entre 50 e 100 métricas
+            var correlationId = Guid.NewGuid().ToString();
+
+            var results = new List<string>();
+
+            for (int i = 0; i < metricsCount; i++)
+            {
+                var metricType = random.Next(1, 4); // 3 tipos de métricas disponíveis
+
+                switch (metricType)
+                {
+                    case 1: // Purchase Request
+                        var customerType = random.Next(0, 3) switch
+                        {
+                            0 => "premium",
+                            1 => "standard",
+                            _ => "basic"
+                        };
+                        _businessMetrics.IncrementPurchaseRequests(correlationId, customerType);
+                        results.Add($"Purchase Request - Customer Type: {customerType}");
+                        break;
+
+                    case 2: // Purchase Success
+                        var successValue = random.NextDouble() * 1000; // Valor entre 0 e 1000
+                        var successItemCount = random.Next(1, 10);
+                        _businessMetrics.IncrementPurchaseSuccess(correlationId, successValue, successItemCount);
+                        results.Add($"Purchase Success - Value: {successValue:F2}, Items: {successItemCount}");
+                        break;
+
+                    case 3: // Purchase Error
+                        var errorType = random.Next(0, 4) switch
+                        {
+                            0 => "validation_error",
+                            1 => "empty_basket",
+                            2 => "product_validation",
+                            _ => "invalid_voucher"
+                        };
+                        var errorMessage = $"Simulated {errorType} error";
+                        _businessMetrics.IncrementPurchaseError(correlationId, errorType, errorMessage);
+                        results.Add($"Purchase Error - Type: {errorType}, Message: {errorMessage}");
+                        break;
+                }
+            }
+
+            return $"Generated {metricsCount} random business metrics:\n" + string.Join("\n", results);
+        }
+
         private string? _errorMessage;
 
         private async Task<BasketDto?> GetBasket(Guid userId)
