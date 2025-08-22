@@ -3,6 +3,7 @@ using System.Diagnostics;
 using Softdesign.CoP.Observability.Bff.Requests;
 using Softdesign.CoP.Observability.Bff.DTO;
 using Softdesign.CoP.Observability.Bff.Services;
+using CorrelationId.Abstractions;
 
 namespace Softdesign.CoP.Observability.Bff.Endpoints
 {
@@ -10,8 +11,12 @@ namespace Softdesign.CoP.Observability.Bff.Endpoints
     {
         public void AddRoutes(IEndpointRouteBuilder app)
         {
-            app.MapPost("/purchase", async (PurchaseRequest request, IPurchaseService purchaseService, HttpContext httpContext) =>
+            app.MapPost("/purchase", async (PurchaseRequest request, IPurchaseService purchaseService, HttpContext httpContext, ICorrelationContextAccessor correlationContextAccessor) =>
             {
+                // Adiciona Correlation ID ao tracing
+                var correlationId = correlationContextAccessor.CorrelationContext?.CorrelationId ?? "unknown";
+                Activity.Current?.SetTag("correlation_id", correlationId);
+
                 // Serializa o request como JSON e adiciona como tag
                 Activity.Current?.SetTag("purchase.request", System.Text.Json.JsonSerializer.Serialize(request));
 
@@ -42,8 +47,12 @@ namespace Softdesign.CoP.Observability.Bff.Endpoints
             .Produces<string>(StatusCodes.Status400BadRequest, "application/json")
             .WithTags("Purchase");
 
-            app.MapGet("/purchase/generate-metrics", async (IPurchaseService purchaseService, HttpContext httpContext) =>
+            app.MapGet("/purchase/generate-metrics", async (IPurchaseService purchaseService, HttpContext httpContext, ICorrelationContextAccessor correlationContextAccessor) =>
             {
+                // Adiciona Correlation ID ao tracing
+                var correlationId = correlationContextAccessor.CorrelationContext?.CorrelationId ?? "unknown";
+                Activity.Current?.SetTag("correlation_id", correlationId);
+
                 // Adiciona informações sobre a geração de métricas no tracing
                 Activity.Current?.SetTag("metrics.generation", "random_business_metrics");
                 Activity.Current?.SetTag("metrics.source", "test_endpoint");

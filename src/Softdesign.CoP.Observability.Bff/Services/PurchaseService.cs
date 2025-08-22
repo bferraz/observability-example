@@ -98,32 +98,36 @@ namespace Softdesign.CoP.Observability.Bff.Services
             var correlationId = Guid.NewGuid().ToString();
 
             var results = new List<string>();
+            var successCount = 0;
+            var errorCount = 0;
 
             for (int i = 0; i < metricsCount; i++)
             {
-                var metricType = random.Next(1, 4); // 3 tipos de métricas disponíveis
+                var metricType = random.Next(1, 3); // 2 tipos de métricas: Success ou Error
 
                 switch (metricType)
                 {
-                    case 1: // Purchase Request
-                        var customerType = random.Next(0, 3) switch
+                    case 1: // Purchase Success
+                        var successValue = random.NextDouble() * 1000; // Valor entre 0 e 1000
+                        var successItemCount = random.Next(1, 10);
+                        var customerTypeSuccess = random.Next(0, 3) switch
                         {
                             0 => "premium",
                             1 => "standard",
                             _ => "basic"
                         };
-                        _businessMetrics.IncrementPurchaseRequests(correlationId, customerType);
-                        results.Add($"Purchase Request - Customer Type: {customerType}");
-                        break;
 
-                    case 2: // Purchase Success
-                        var successValue = random.NextDouble() * 1000; // Valor entre 0 e 1000
-                        var successItemCount = random.Next(1, 10);
+                        // Incrementa Request (que representa o início da operação)
+                        _businessMetrics.IncrementPurchaseRequests(correlationId, customerTypeSuccess);
+
+                        // Incrementa Success
                         _businessMetrics.IncrementPurchaseSuccess(correlationId, successValue, successItemCount);
-                        results.Add($"Purchase Success - Value: {successValue:F2}, Items: {successItemCount}");
+
+                        successCount++;
+                        results.Add($"Purchase Success - Customer Type: {customerTypeSuccess}, Value: {successValue:F2}, Items: {successItemCount}");
                         break;
 
-                    case 3: // Purchase Error
+                    case 2: // Purchase Error
                         var errorType = random.Next(0, 4) switch
                         {
                             0 => "validation_error",
@@ -132,13 +136,26 @@ namespace Softdesign.CoP.Observability.Bff.Services
                             _ => "invalid_voucher"
                         };
                         var errorMessage = $"Simulated {errorType} error";
+
+                        // Incrementa Request (que representa o início da operação)
+                        _businessMetrics.IncrementPurchaseRequests(correlationId, "custom");
+
+                        // Incrementa Error
                         _businessMetrics.IncrementPurchaseError(correlationId, errorType, errorMessage);
+
+                        errorCount++;
                         results.Add($"Purchase Error - Type: {errorType}, Message: {errorMessage}");
                         break;
                 }
+
+                // Pequeno delay para simular operações reais
+                await Task.Delay(random.Next(1, 10));
             }
 
-            return $"Generated {metricsCount} random business metrics:\n" + string.Join("\n", results);
+            var totalRequests = successCount + errorCount;
+            return $"Generated {metricsCount} random business metrics:\n" +
+                   $"Total Requests: {totalRequests} (Success: {successCount}, Errors: {errorCount})\n\n" +
+                   string.Join("\n", results);
         }
 
         private string? _errorMessage;
