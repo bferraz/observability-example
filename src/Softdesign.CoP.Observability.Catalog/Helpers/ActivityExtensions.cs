@@ -1,7 +1,7 @@
 // Helper for OpenTelemetry span enrichment in minimal APIs
 using System.Diagnostics;
 
-namespace Softdesign.CoP.Observability.Order.Helpers
+namespace Softdesign.CoP.Observability.Catalog.Helpers
 {
     public static class ActivityExtensions
     {

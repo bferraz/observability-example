@@ -1,9 +1,9 @@
-﻿using System;
+using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace Softdesign.CoP.Observability.Order.Migrations
+namespace Softdesign.CoP.Observability.Catalog.Migrations
 {
     /// <inheritdoc />
     public partial class InitialCreate : Migration

@@ -1,4 +1,4 @@
-namespace Softdesign.CoP.Observability.Order.Domain
+namespace Softdesign.CoP.Observability.Catalog.Domain
 {
     public class Voucher
     {

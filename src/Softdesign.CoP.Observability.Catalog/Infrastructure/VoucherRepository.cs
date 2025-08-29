@@ -1,14 +1,14 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-using Softdesign.CoP.Observability.Order.Domain;
+using Softdesign.CoP.Observability.Catalog.Domain;
 
-namespace Softdesign.CoP.Observability.Order.Infrastructure
+namespace Softdesign.CoP.Observability.Catalog.Infrastructure
 {
     public class VoucherRepository
     {
-        private readonly OrderDbContext _context;
-        public VoucherRepository(OrderDbContext context) => _context = context;
+        private readonly CatalogDbContext _context;
+        public VoucherRepository(CatalogDbContext context) => _context = context;
 
         public async Task<List<Voucher>> GetAllAsync() => await _context.Vouchers.ToListAsync();
         public async Task<Voucher?> GetByIdAsync(Guid id) => await _context.Vouchers.FindAsync(id);

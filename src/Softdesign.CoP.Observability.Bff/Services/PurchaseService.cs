@@ -13,14 +13,14 @@ namespace Softdesign.CoP.Observability.Bff.Services
     public class PurchaseService : IPurchaseService
     {
         private readonly IBasketApi _basketApi;
-        private readonly IOrderApi _orderApi;
+        private readonly ICatalogApi _catalogApi;
         private readonly BusinessMetrics _businessMetrics;
         private readonly ICorrelationContextAccessor _correlationContextAccessor;
 
-        public PurchaseService(IBasketApi basketApi, IOrderApi orderApi, BusinessMetrics businessMetrics, ICorrelationContextAccessor correlationContextAccessor)
+        public PurchaseService(IBasketApi basketApi, ICatalogApi catalogApi, BusinessMetrics businessMetrics, ICorrelationContextAccessor correlationContextAccessor)
         {
             _basketApi = basketApi;
-            _orderApi = orderApi;
+            _catalogApi = catalogApi;
             _businessMetrics = businessMetrics;
             _correlationContextAccessor = correlationContextAccessor;
         }
@@ -28,7 +28,7 @@ namespace Softdesign.CoP.Observability.Bff.Services
         public async Task<(bool Success, PurchaseResponse? Response, string? ErrorMessage)> ProcessPurchaseAsync(PurchaseRequest request)
         {
             var correlationId = _correlationContextAccessor.CorrelationContext?.CorrelationId ?? "unknown";
-            var stopwatch = Stopwatch.StartNew();
+            //var stopwatch = Stopwatch.StartNew();
 
             // Métrica: Incrementar requests totais
             _businessMetrics.IncrementPurchaseRequests(correlationId, "custom");
@@ -181,7 +181,7 @@ namespace Softdesign.CoP.Observability.Bff.Services
             {
                 try
                 {
-                    var product = await _orderApi.GetProductByIdAsync(item.ProductId);
+                    var product = await _catalogApi.GetProductByIdAsync(item.ProductId);
 
                     if (product == null)
                     {
@@ -208,7 +208,7 @@ namespace Softdesign.CoP.Observability.Bff.Services
             VoucherDto? voucher;
             try
             {
-                voucher = await _orderApi.GetVoucherByCodeAsync(voucherCode);
+                voucher = await _catalogApi.GetVoucherByCodeAsync(voucherCode);
             }
             catch (ApiException ex) when (ex.StatusCode == HttpStatusCode.NotFound)
             {
@@ -220,7 +220,7 @@ namespace Softdesign.CoP.Observability.Bff.Services
 
             try
             {
-                await _orderApi.DeleteVoucherAsync(voucher.Id);
+                await _catalogApi.DeleteVoucherAsync(voucher.Id);
             }
             catch (Exception)
             {
@@ -239,7 +239,7 @@ namespace Softdesign.CoP.Observability.Bff.Services
 
                 try
                 {
-                    await _orderApi.UpdateProductAsync(product.Id, product);
+                    await _catalogApi.UpdateProductAsync(product.Id, product);
                 }
                 catch (Exception)
                 {

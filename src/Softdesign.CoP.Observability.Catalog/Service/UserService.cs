@@ -1,9 +1,9 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Softdesign.CoP.Observability.Order.Domain;
-using Softdesign.CoP.Observability.Order.Infrastructure;
+using Softdesign.CoP.Observability.Catalog.Domain;
+using Softdesign.CoP.Observability.Catalog.Infrastructure;
 
-namespace Softdesign.CoP.Observability.Order.Service
+namespace Softdesign.CoP.Observability.Catalog.Service
 {
     public class UserService
     {

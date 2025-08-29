@@ -4,7 +4,7 @@ using Softdesign.CoP.Observability.Bff.DTO;
 
 namespace Softdesign.CoP.Observability.Bff.Contracts.Endpoints
 {
-    public interface IOrderApi
+    public interface ICatalogApi
     {
         [Get("/products/{id}")]
         Task<ProductDto?> GetProductByIdAsync(Guid id);
@@ -14,7 +14,7 @@ namespace Softdesign.CoP.Observability.Bff.Contracts.Endpoints
 
         [Get("/vouchers/code/{code}")]
         Task<VoucherDto?> GetVoucherByCodeAsync(string code);
-        
+
         [Delete("/vouchers/{id}")]
         Task DeleteVoucherAsync(Guid id);
     }

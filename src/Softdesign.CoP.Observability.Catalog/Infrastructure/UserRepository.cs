@@ -1,14 +1,14 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-using Softdesign.CoP.Observability.Order.Domain;
+using Softdesign.CoP.Observability.Catalog.Domain;
 
-namespace Softdesign.CoP.Observability.Order.Infrastructure
+namespace Softdesign.CoP.Observability.Catalog.Infrastructure
 {
     public class UserRepository
     {
-        private readonly OrderDbContext _context;
-        public UserRepository(OrderDbContext context) => _context = context;
+        private readonly CatalogDbContext _context;
+        public UserRepository(CatalogDbContext context) => _context = context;
 
         public async Task<List<User>> GetAllAsync() => await _context.Users.ToListAsync();
         public async Task<User?> GetByIdAsync(Guid id) => await _context.Users.FindAsync(id);

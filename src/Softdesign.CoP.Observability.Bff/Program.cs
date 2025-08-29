@@ -47,7 +47,7 @@ builder.Services.AddRefitClient<IBasketApi>()
     .ConfigureHttpClient(c => c.BaseAddress = new Uri("http://localhost:5027"))
     .AddHttpMessageHandler<CorrelationIdDelegatingHandler>(); // Propaga o Correlation ID
 
-builder.Services.AddRefitClient<IOrderApi>()
+builder.Services.AddRefitClient<ICatalogApi>()
     .ConfigureHttpClient(c => c.BaseAddress = new Uri("http://localhost:5135"))
     .AddHttpMessageHandler<CorrelationIdDelegatingHandler>(); // Propaga o Correlation ID
 

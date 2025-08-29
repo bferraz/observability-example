@@ -1,10 +1,10 @@
 using Carter;
-using Softdesign.CoP.Observability.Order.Domain;
-using Softdesign.CoP.Observability.Order.Service;
+using Softdesign.CoP.Observability.Catalog.Domain;
+using Softdesign.CoP.Observability.Catalog.Service;
 using System.Text.Json;
 using System.Diagnostics;
 
-namespace Softdesign.CoP.Observability.Order.Endpoints
+namespace Softdesign.CoP.Observability.Catalog.Endpoints
 {
     public class UserEndpoints : ICarterModule
     {
