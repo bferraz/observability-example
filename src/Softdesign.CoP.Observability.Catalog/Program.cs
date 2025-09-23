@@ -107,7 +107,7 @@ using (var scope = app.Services.CreateScope())
     {
         var products = new List<Product>
         {
-            new Product { Id = Guid.Parse("123e4567-e89b-12d3-a456-426614174000"), Name = "Mouse", Description = "Mouse óptico USB", Value = 50, QtdStock = 1 },
+            new Product { Id = Guid.Parse("3ef6f085-d567-4ba4-9368-e320a2b923a7"), Name = "Mouse", Description = "Mouse óptico USB", Value = 50, QtdStock = 1 },
             new Product { Id = Guid.Parse("3fa85f64-5717-4562-b3fc-2c963f66afa6"), Name = "Monitor", Description = "Monitor 24'' Full HD", Value = 1250, QtdStock = 1 },
             new Product { Id = Guid.Parse("eef8e519-7b44-49fc-bf79-30729ce1fa1e"), Name = "Pentes de Memória", Description = "Kit 2x8GB DDR4", Value = 870, QtdStock = 2 }
         };

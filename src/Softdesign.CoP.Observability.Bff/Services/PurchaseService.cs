@@ -6,7 +6,6 @@ using Softdesign.CoP.Observability.Bff.DTO;
 using Softdesign.CoP.Observability.Bff.Requests;
 using Softdesign.CoP.Observability.Bff.Metrics;
 using CorrelationId.Abstractions;
-using System.Diagnostics;
 
 namespace Softdesign.CoP.Observability.Bff.Services
 {
