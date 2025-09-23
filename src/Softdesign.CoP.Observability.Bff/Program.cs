@@ -100,15 +100,13 @@ builder.Services.AddTransient<CorrelationIdDelegatingHandler>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.MapOpenApi();
+// Swagger habilitado em todos os ambientes para facilitar testes
+app.MapOpenApi();
 
-    app.UseSwaggerUI(options =>
-    {
-        options.SwaggerEndpoint("/openapi/v1.json", "BFF API");
-    });
-}
+app.UseSwaggerUI(options =>
+{
+    options.SwaggerEndpoint("/openapi/v1.json", "BFF API");
+});
 
 // Middleware do Correlation ID
 app.UseCorrelationId();

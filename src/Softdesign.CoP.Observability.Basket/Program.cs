@@ -99,7 +99,7 @@ using (var scope = app.Services.CreateScope())
     {
         var basket = new Basket
         {
-            Id = Guid.Parse("1b937427-adb8-4587-b4d4-0e5c143c4891"),
+            Id = Guid.Parse("123e4567-e89b-12d3-a456-426614174000"),
             Items = new List<BasketItem>
             {
                 new BasketItem { ProductId = Guid.Parse("3ef6f085-d567-4ba4-9368-e320a2b923a7"), ProductName = "Mouse", Quantity = 1, Value = 50 },
@@ -112,15 +112,13 @@ using (var scope = app.Services.CreateScope())
 }
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.MapOpenApi();
+// Swagger habilitado em todos os ambientes para facilitar testes
+app.MapOpenApi();
 
-    app.UseSwaggerUI(options =>
-    {
-        options.SwaggerEndpoint("/openapi/v1.json", "Basket API");
-    });
-}
+app.UseSwaggerUI(options =>
+{
+    options.SwaggerEndpoint("/openapi/v1.json", "Basket API");
+});
 
 // Middleware do Correlation ID
 app.UseCorrelationId();

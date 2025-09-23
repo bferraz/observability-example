@@ -10,7 +10,6 @@ using Serilog.Sinks.Grafana.Loki;
 using OpenTelemetry.Resources;
 using CorrelationId;
 using CorrelationId.DependencyInjection;
-using Softdesign.CoP.Observability.Catalog.Metrics;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -66,9 +65,6 @@ builder.Services.AddScoped<ProductService>();
 builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<VoucherService>();
 
-// Registrar métricas de negócio
-builder.Services.AddSingleton<CatalogMetrics>();
-
 builder.Services.AddCarter();
 
 builder.Services.AddOpenTelemetry()
@@ -111,7 +107,7 @@ using (var scope = app.Services.CreateScope())
     {
         var products = new List<Product>
         {
-            new Product { Id = Guid.Parse("3ef6f085-d567-4ba4-9368-e320a2b923a7"), Name = "Mouse", Description = "Mouse óptico USB", Value = 50, QtdStock = 1 },
+            new Product { Id = Guid.Parse("123e4567-e89b-12d3-a456-426614174000"), Name = "Mouse", Description = "Mouse óptico USB", Value = 50, QtdStock = 1 },
             new Product { Id = Guid.Parse("3fa85f64-5717-4562-b3fc-2c963f66afa6"), Name = "Monitor", Description = "Monitor 24'' Full HD", Value = 1250, QtdStock = 1 },
             new Product { Id = Guid.Parse("eef8e519-7b44-49fc-bf79-30729ce1fa1e"), Name = "Pentes de Memória", Description = "Kit 2x8GB DDR4", Value = 870, QtdStock = 2 }
         };
@@ -124,25 +120,41 @@ using (var scope = app.Services.CreateScope())
     {
         var vouchers = new List<Voucher>
         {
-            new Voucher { Id = Guid.Parse("35bb3de5-b542-44cf-a6ac-84e3d291ddaa"), Code = "DESCONTO10", Description = "Voucher 10%", Discount = 10, ExpiryDate = DateTime.SpecifyKind(new DateTime(2025, 12, 31), DateTimeKind.Utc) },
+            new Voucher { Id = Guid.Parse("123e4567-e89b-12d3-a456-426614174000"), Code = "DESCONTO10", Description = "Voucher 10%", Discount = 10, ExpiryDate = DateTime.SpecifyKind(new DateTime(2025, 12, 31), DateTimeKind.Utc) },
             new Voucher { Id = Guid.NewGuid(), Code = "DESCONTO15", Description = "Voucher 15%", Discount = 15, ExpiryDate = DateTime.SpecifyKind(new DateTime(2025, 12, 31), DateTimeKind.Utc) },
-            new Voucher { Id = Guid.NewGuid(), Code = "FRETEGRATIS", Description = "Frete Grátis", Discount = 0, ExpiryDate = DateTime.SpecifyKind(new DateTime(2025, 12, 31), DateTimeKind.Utc) }
+            new Voucher { Id = Guid.NewGuid(), Code = "FRETEGRATIS", Description = "Frete Grátis", Discount = 20, ExpiryDate = DateTime.SpecifyKind(new DateTime(2025, 12, 31), DateTimeKind.Utc) }
         };
         db.Vouchers.AddRange(vouchers);
+        db.SaveChanges();
+    }
+
+    // Cadastrar usuário de teste se não houver nenhum
+    if (!db.Users.Any())
+    {
+        var users = new List<User>
+        {
+            new User
+            {
+                Id = Guid.Parse("123e4567-e89b-12d3-a456-426614174000"), // Mesmo GUID usado no carrinho
+                Name = "João Silva",
+                Email = "joao.silva@email.com",
+                Address = "Rua das Flores, 123 - Porto Alegre/RS",
+                Phone = "(51) 99999-9999"
+            },
+        };
+        db.Users.AddRange(users);
         db.SaveChanges();
     }
 }
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.MapOpenApi();
+// Swagger habilitado em todos os ambientes para facilitar testes
+app.MapOpenApi();
 
-    app.UseSwaggerUI(options =>
-    {
-        options.SwaggerEndpoint("/openapi/v1.json", "Catalog API");
-    });
-}
+app.UseSwaggerUI(options =>
+{
+    options.SwaggerEndpoint("/openapi/v1.json", "Catalog API");
+});
 
 app.UseOpenTelemetryPrometheusScrapingEndpoint();
 
