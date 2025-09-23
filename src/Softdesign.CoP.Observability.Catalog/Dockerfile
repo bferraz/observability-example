@@ -11,19 +11,19 @@ EXPOSE 8080
 FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-COPY ["src/Softdesign.CoP.Observability.Order/Softdesign.CoP.Observability.Order.csproj", "src/Softdesign.CoP.Observability.Order/"]
-RUN dotnet restore "./src/Softdesign.CoP.Observability.Order/Softdesign.CoP.Observability.Order.csproj"
+COPY ["Softdesign.CoP.Observability.Catalog.csproj", "."]
+RUN dotnet restore "./Softdesign.CoP.Observability.Catalog.csproj"
 COPY . .
-WORKDIR "/src/src/Softdesign.CoP.Observability.Order"
-RUN dotnet build "./Softdesign.CoP.Observability.Order.csproj" -c $BUILD_CONFIGURATION -o /app/build
+WORKDIR "/src"
+RUN dotnet build "./Softdesign.CoP.Observability.Catalog.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
 # This stage is used to publish the service project to be copied to the final stage
 FROM build AS publish
 ARG BUILD_CONFIGURATION=Release
-RUN dotnet publish "./Softdesign.CoP.Observability.Order.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
+RUN dotnet publish "./Softdesign.CoP.Observability.Catalog.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
 
 # This stage is used in production or when running from VS in regular mode (Default when not using the Debug configuration)
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "Softdesign.CoP.Observability.Order.dll"]
+ENTRYPOINT ["dotnet", "Softdesign.CoP.Observability.Catalog.dll"]

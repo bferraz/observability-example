@@ -3,6 +3,7 @@ using Softdesign.CoP.Observability.Catalog.Domain;
 using Softdesign.CoP.Observability.Catalog.Service;
 using System.Text.Json;
 using System.Diagnostics;
+using CorrelationId.Abstractions;
 
 namespace Softdesign.CoP.Observability.Catalog.Endpoints
 {
@@ -10,8 +11,12 @@ namespace Softdesign.CoP.Observability.Catalog.Endpoints
     {
         public void AddRoutes(IEndpointRouteBuilder app)
         {
-            app.MapGet("/users", async (UserService service) =>
+            app.MapGet("/users", async (UserService service, ICorrelationContextAccessor correlationContextAccessor) =>
             {
+                // Adiciona Correlation ID ao tracing
+                var correlationId = correlationContextAccessor.CorrelationContext?.CorrelationId ?? "unknown";
+                Activity.Current?.SetTag("correlation_id", correlationId);
+
                 var activity = Activity.Current;
 
                 var result = await service.GetAllAsync();
@@ -26,8 +31,12 @@ namespace Softdesign.CoP.Observability.Catalog.Endpoints
             .Produces<List<User>>(StatusCodes.Status200OK, "application/json")
             .WithTags("Users");
 
-            app.MapGet("/users/{id}", async (Guid id, UserService service) =>
+            app.MapGet("/users/{id}", async (Guid id, UserService service, ICorrelationContextAccessor correlationContextAccessor) =>
             {
+                // Adiciona Correlation ID ao tracing
+                var correlationId = correlationContextAccessor.CorrelationContext?.CorrelationId ?? "unknown";
+                Activity.Current?.SetTag("correlation_id", correlationId);
+
                 var activity = Activity.Current;
                 activity?.SetTag("request.id", id.ToString());
 
@@ -44,8 +53,12 @@ namespace Softdesign.CoP.Observability.Catalog.Endpoints
             .Produces(StatusCodes.Status404NotFound)
             .WithTags("Users");
 
-            app.MapPost("/users", async (User user, UserService service) =>
+            app.MapPost("/users", async (User user, UserService service, ICorrelationContextAccessor correlationContextAccessor) =>
             {
+                // Adiciona Correlation ID ao tracing
+                var correlationId = correlationContextAccessor.CorrelationContext?.CorrelationId ?? "unknown";
+                Activity.Current?.SetTag("correlation_id", correlationId);
+
                 var activity = Activity.Current;
                 activity?.SetTag("request.body", JsonSerializer.Serialize(user));
 
@@ -63,8 +76,12 @@ namespace Softdesign.CoP.Observability.Catalog.Endpoints
             .Produces<User>(StatusCodes.Status201Created, "application/json")
             .WithTags("Users");
 
-            app.MapPut("/users/{id}", async (Guid id, User user, UserService service) =>
+            app.MapPut("/users/{id}", async (Guid id, User user, UserService service, ICorrelationContextAccessor correlationContextAccessor) =>
             {
+                // Adiciona Correlation ID ao tracing
+                var correlationId = correlationContextAccessor.CorrelationContext?.CorrelationId ?? "unknown";
+                Activity.Current?.SetTag("correlation_id", correlationId);
+
                 var activity = Activity.Current;
                 activity?.SetTag("request.id", id.ToString());
                 activity?.SetTag("request.body", JsonSerializer.Serialize(user));
@@ -83,8 +100,12 @@ namespace Softdesign.CoP.Observability.Catalog.Endpoints
             .Produces<User>(StatusCodes.Status200OK, "application/json")
             .WithTags("Users");
 
-            app.MapDelete("/users/{id}", async (Guid id, UserService service) =>
+            app.MapDelete("/users/{id}", async (Guid id, UserService service, ICorrelationContextAccessor correlationContextAccessor) =>
             {
+                // Adiciona Correlation ID ao tracing
+                var correlationId = correlationContextAccessor.CorrelationContext?.CorrelationId ?? "unknown";
+                Activity.Current?.SetTag("correlation_id", correlationId);
+
                 var activity = Activity.Current;
                 activity?.SetTag("request.id", id.ToString());
 

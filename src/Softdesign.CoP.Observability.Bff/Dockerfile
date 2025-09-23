@@ -11,10 +11,10 @@ EXPOSE 8080
 FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-COPY ["src/Softdesign.CoP.Observability.Bff/Softdesign.CoP.Observability.Bff.csproj", "src/Softdesign.CoP.Observability.Bff/"]
-RUN dotnet restore "./src/Softdesign.CoP.Observability.Bff/Softdesign.CoP.Observability.Bff.csproj"
+COPY ["Softdesign.CoP.Observability.Bff.csproj", "."]
+RUN dotnet restore "./Softdesign.CoP.Observability.Bff.csproj"
 COPY . .
-WORKDIR "/src/src/Softdesign.CoP.Observability.Bff"
+WORKDIR "/src"
 RUN dotnet build "./Softdesign.CoP.Observability.Bff.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
 # This stage is used to publish the service project to be copied to the final stage

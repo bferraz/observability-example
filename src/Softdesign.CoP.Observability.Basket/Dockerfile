@@ -12,19 +12,19 @@ EXPOSE 8081
 FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-COPY ["src/Softdesign.CoP.Observability.API/Softdesign.CoP.Observability.API.csproj", "src/Softdesign.CoP.Observability.API/"]
-RUN dotnet restore "./src/Softdesign.CoP.Observability.API/Softdesign.CoP.Observability.API.csproj"
+COPY ["Softdesign.CoP.Observability.Basket.csproj", "."]
+RUN dotnet restore "./Softdesign.CoP.Observability.Basket.csproj"
 COPY . .
-WORKDIR "/src/src/Softdesign.CoP.Observability.API"
-RUN dotnet build "./Softdesign.CoP.Observability.API.csproj" -c $BUILD_CONFIGURATION -o /app/build
+WORKDIR "/src"
+RUN dotnet build "./Softdesign.CoP.Observability.Basket.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
 # This stage is used to publish the service project to be copied to the final stage
 FROM build AS publish
 ARG BUILD_CONFIGURATION=Release
-RUN dotnet publish "./Softdesign.CoP.Observability.API.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
+RUN dotnet publish "./Softdesign.CoP.Observability.Basket.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
 
 # This stage is used in production or when running from VS in regular mode (Default when not using the Debug configuration)
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "Softdesign.CoP.Observability.API.dll"]
+ENTRYPOINT ["dotnet", "Softdesign.CoP.Observability.Basket.dll"]

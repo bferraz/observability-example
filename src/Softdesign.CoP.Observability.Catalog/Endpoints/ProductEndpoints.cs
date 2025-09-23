@@ -14,7 +14,10 @@ namespace Softdesign.CoP.Observability.Catalog.Endpoints
         {
             app.MapGet("/products", async (ProductService service, ICorrelationContextAccessor correlationContext) =>
             {
-                var correlationId = correlationContext.CorrelationContext.CorrelationId;
+                // Adiciona Correlation ID ao tracing
+                var correlationId = correlationContext.CorrelationContext?.CorrelationId ?? "unknown";
+                Activity.Current?.SetTag("correlation_id", correlationId);
+
                 var activity = Activity.Current;
 
                 Log.Information("Iniciando busca de produtos - CorrelationId: {CorrelationId}", correlationId);
@@ -36,7 +39,10 @@ namespace Softdesign.CoP.Observability.Catalog.Endpoints
 
             app.MapGet("/products/{id}", async (Guid id, ProductService service, ICorrelationContextAccessor correlationContext) =>
             {
-                var correlationId = correlationContext.CorrelationContext.CorrelationId;
+                // Adiciona Correlation ID ao tracing
+                var correlationId = correlationContext.CorrelationContext?.CorrelationId ?? "unknown";
+                Activity.Current?.SetTag("correlation_id", correlationId);
+
                 var activity = Activity.Current;
                 activity?.SetTag("request.id", id.ToString());
 
@@ -64,8 +70,12 @@ namespace Softdesign.CoP.Observability.Catalog.Endpoints
             .Produces(StatusCodes.Status404NotFound)
             .WithTags("Products");
 
-            app.MapPost("/products", async (Product product, ProductService service) =>
+            app.MapPost("/products", async (Product product, ProductService service, ICorrelationContextAccessor correlationContextAccessor) =>
             {
+                // Adiciona Correlation ID ao tracing
+                var correlationId = correlationContextAccessor.CorrelationContext?.CorrelationId ?? "unknown";
+                Activity.Current?.SetTag("correlation_id", correlationId);
+
                 var activity = Activity.Current;
                 activity?.SetTag("request.body", JsonSerializer.Serialize(product));
 
@@ -85,8 +95,12 @@ namespace Softdesign.CoP.Observability.Catalog.Endpoints
             .Produces<Product>(StatusCodes.Status201Created, "application/json")
             .WithTags("Products");
 
-            app.MapPut("/products/{id}", async (Guid id, Product product, ProductService service) =>
+            app.MapPut("/products/{id}", async (Guid id, Product product, ProductService service, ICorrelationContextAccessor correlationContextAccessor) =>
             {
+                // Adiciona Correlation ID ao tracing
+                var correlationId = correlationContextAccessor.CorrelationContext?.CorrelationId ?? "unknown";
+                Activity.Current?.SetTag("correlation_id", correlationId);
+
                 var activity = Activity.Current;
                 activity?.SetTag("request.id", id.ToString());
                 activity?.SetTag("request.body", JsonSerializer.Serialize(product));
@@ -105,8 +119,12 @@ namespace Softdesign.CoP.Observability.Catalog.Endpoints
             .Produces<Product>(StatusCodes.Status200OK, "application/json")
             .WithTags("Products");
 
-            app.MapDelete("/products/{id}", async (Guid id, ProductService service) =>
+            app.MapDelete("/products/{id}", async (Guid id, ProductService service, ICorrelationContextAccessor correlationContextAccessor) =>
             {
+                // Adiciona Correlation ID ao tracing
+                var correlationId = correlationContextAccessor.CorrelationContext?.CorrelationId ?? "unknown";
+                Activity.Current?.SetTag("correlation_id", correlationId);
+
                 var activity = Activity.Current;
                 activity?.SetTag("request.id", id.ToString());
 

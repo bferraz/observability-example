@@ -65,17 +65,6 @@ services:
     command: -config.file=/etc/loki/local-config.yaml
     restart: unless-stopped
 
-  # promtail:
-  #   image: grafana/promtail:2.9.4
-  #   container_name: promtail
-  #   volumes:
-  #     - ./promtail-config.yml:/etc/promtail/config.yml
-  #     - /var/log:/var/log
-  #   command: -config.file=/etc/promtail/config.yml
-  #   depends_on:
-  #     - loki
-  #   restart: unless-stopped
-
   tempo:
     image: grafana/tempo:2.4.1
     container_name: tempo
@@ -90,18 +79,43 @@ services:
 
   basket-api:
     build: ./src/Softdesign.CoP.Observability.Basket
-    ports: ["5027:8080"]
-    depends_on: [redis, loki, tempo]
+    container_name: basket-api
+    ports:
+      - "5027:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+    depends_on:
+      - redis
+      - loki
+      - tempo
+    restart: unless-stopped
 
-  order-api:
-    build: ./src/Softdesign.CoP.Observability.Order
-    ports: ["5135:8080"]
-    depends_on: [postgres, loki, tempo]
+  catalog-api:
+    build: ./src/Softdesign.CoP.Observability.Catalog
+    container_name: catalog-api
+    ports:
+      - "5135:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+    depends_on:
+      - postgres
+      - loki
+      - tempo
+    restart: unless-stopped
 
   bff:
     build: ./src/Softdesign.CoP.Observability.Bff
-    ports: ["5115:8080"]
-    depends_on: [basket-api, order-api, loki, tempo]
+    container_name: bff
+    ports:
+      - "5115:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+    depends_on:
+      - basket-api
+      - catalog-api
+      - loki
+      - tempo
+    restart: unless-stopped
 
 volumes:
   postgres_data:

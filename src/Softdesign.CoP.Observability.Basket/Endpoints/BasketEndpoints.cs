@@ -3,6 +3,7 @@ using Serilog;
 using Softdesign.CoP.Observability.Basket.Service;
 using System.Diagnostics;
 using System.Text.Json;
+using CorrelationId.Abstractions;
 
 namespace Softdesign.CoP.Observability.Basket.Endpoints
 {
@@ -10,8 +11,12 @@ namespace Softdesign.CoP.Observability.Basket.Endpoints
     {
         public void AddRoutes(IEndpointRouteBuilder app)
         {
-            app.MapPost("/basket", async (Domain.Basket basket, BasketService service) =>
+            app.MapPost("/basket", async (Domain.Basket basket, BasketService service, ICorrelationContextAccessor correlationContextAccessor) =>
             {
+                // Adiciona Correlation ID ao tracing
+                var correlationId = correlationContextAccessor.CorrelationContext?.CorrelationId ?? "unknown";
+                Activity.Current?.SetTag("correlation_id", correlationId);
+
                 var activity = Activity.Current;
                 activity?.SetTag("request.body", JsonSerializer.Serialize(basket));
 
@@ -28,8 +33,12 @@ namespace Softdesign.CoP.Observability.Basket.Endpoints
             .Produces(StatusCodes.Status200OK)
             .Accepts<Domain.Basket>("application/json");
 
-            app.MapPut("/basket", async (Domain.Basket basket, BasketService service) =>
+            app.MapPut("/basket", async (Domain.Basket basket, BasketService service, ICorrelationContextAccessor correlationContextAccessor) =>
             {
+                // Adiciona Correlation ID ao tracing
+                var correlationId = correlationContextAccessor.CorrelationContext?.CorrelationId ?? "unknown";
+                Activity.Current?.SetTag("correlation_id", correlationId);
+
                 var activity = Activity.Current;
                 activity?.SetTag("request.body", JsonSerializer.Serialize(basket));
 
@@ -45,8 +54,12 @@ namespace Softdesign.CoP.Observability.Basket.Endpoints
             .Produces(StatusCodes.Status200OK)
             .Accepts<Domain.Basket>("application/json");
 
-            app.MapGet("/basket/{id}", async (Guid id, BasketService service) =>
+            app.MapGet("/basket/{id}", async (Guid id, BasketService service, ICorrelationContextAccessor correlationContextAccessor) =>
             {
+                // Adiciona Correlation ID ao tracing
+                var correlationId = correlationContextAccessor.CorrelationContext?.CorrelationId ?? "unknown";
+                Activity.Current?.SetTag("correlation_id", correlationId);
+
                 var activity = Activity.Current;
                 activity?.SetTag("request.id", id.ToString());
 
@@ -67,8 +80,12 @@ namespace Softdesign.CoP.Observability.Basket.Endpoints
             .Produces<Domain.Basket>(StatusCodes.Status200OK, "application/json")
             .Produces(StatusCodes.Status404NotFound);
 
-            app.MapDelete("/basket/{id}", async (Guid id, BasketService service) =>
+            app.MapDelete("/basket/{id}", async (Guid id, BasketService service, ICorrelationContextAccessor correlationContextAccessor) =>
             {
+                // Adiciona Correlation ID ao tracing
+                var correlationId = correlationContextAccessor.CorrelationContext?.CorrelationId ?? "unknown";
+                Activity.Current?.SetTag("correlation_id", correlationId);
+
                 var activity = Activity.Current;
                 activity?.SetTag("request.id", id.ToString());
 

@@ -1,8 +1,8 @@
 using Carter;
-using Microsoft.AspNetCore.Http;
 using Softdesign.CoP.Observability.Catalog.Domain;
 using Softdesign.CoP.Observability.Catalog.Service;
 using System.Diagnostics;
+using CorrelationId.Abstractions;
 
 namespace Softdesign.CoP.Observability.Catalog.Endpoints
 {
@@ -10,8 +10,12 @@ namespace Softdesign.CoP.Observability.Catalog.Endpoints
     {
         public void AddRoutes(IEndpointRouteBuilder app)
         {
-            app.MapGet("/vouchers", async (VoucherService service) =>
+            app.MapGet("/vouchers", async (VoucherService service, ICorrelationContextAccessor correlationContextAccessor) =>
             {
+                // Adiciona Correlation ID ao tracing
+                var correlationId = correlationContextAccessor.CorrelationContext?.CorrelationId ?? "unknown";
+                Activity.Current?.SetTag("correlation_id", correlationId);
+
                 var vouchers = await service.GetAllAsync();
 
                 Activity.Current?.SetTag("vouchers.count", vouchers?.Count.ToString());
@@ -24,8 +28,12 @@ namespace Softdesign.CoP.Observability.Catalog.Endpoints
                 .Produces<List<Voucher>>(StatusCodes.Status200OK, "application/json")
                 .WithTags("Vouchers");
 
-            app.MapGet("/vouchers/{id}", async (Guid id, VoucherService service) =>
+            app.MapGet("/vouchers/{id}", async (Guid id, VoucherService service, ICorrelationContextAccessor correlationContextAccessor) =>
             {
+                // Adiciona Correlation ID ao tracing
+                var correlationId = correlationContextAccessor.CorrelationContext?.CorrelationId ?? "unknown";
+                Activity.Current?.SetTag("correlation_id", correlationId);
+
                 Activity.Current?.SetTag("voucher.id", id.ToString());
 
                 var voucher = await service.GetByIdAsync(id);
@@ -41,8 +49,12 @@ namespace Softdesign.CoP.Observability.Catalog.Endpoints
             .Produces(StatusCodes.Status404NotFound)
             .WithTags("Vouchers");
 
-            app.MapPost("/vouchers", async (Voucher voucher, VoucherService service) =>
+            app.MapPost("/vouchers", async (Voucher voucher, VoucherService service, ICorrelationContextAccessor correlationContextAccessor) =>
             {
+                // Adiciona Correlation ID ao tracing
+                var correlationId = correlationContextAccessor.CorrelationContext?.CorrelationId ?? "unknown";
+                Activity.Current?.SetTag("correlation_id", correlationId);
+
                 voucher.Id = Guid.NewGuid();
 
                 Activity.Current?.SetTag("voucher.id", voucher.Id.ToString());
@@ -59,8 +71,12 @@ namespace Softdesign.CoP.Observability.Catalog.Endpoints
             .Produces<Voucher>(StatusCodes.Status201Created, "application/json")
             .WithTags("Vouchers");
 
-            app.MapPut("/vouchers/{id}", async (Guid id, Voucher voucher, VoucherService service) =>
+            app.MapPut("/vouchers/{id}", async (Guid id, Voucher voucher, VoucherService service, ICorrelationContextAccessor correlationContextAccessor) =>
             {
+                // Adiciona Correlation ID ao tracing
+                var correlationId = correlationContextAccessor.CorrelationContext?.CorrelationId ?? "unknown";
+                Activity.Current?.SetTag("correlation_id", correlationId);
+
                 voucher.Id = id;
 
                 Activity.Current?.SetTag("voucher.id", id.ToString());
@@ -77,8 +93,12 @@ namespace Softdesign.CoP.Observability.Catalog.Endpoints
             .Produces<Voucher>(StatusCodes.Status200OK, "application/json")
             .WithTags("Vouchers");
 
-            app.MapDelete("/vouchers/{id}", async (Guid id, VoucherService service) =>
+            app.MapDelete("/vouchers/{id}", async (Guid id, VoucherService service, ICorrelationContextAccessor correlationContextAccessor) =>
             {
+                // Adiciona Correlation ID ao tracing
+                var correlationId = correlationContextAccessor.CorrelationContext?.CorrelationId ?? "unknown";
+                Activity.Current?.SetTag("correlation_id", correlationId);
+
                 Activity.Current?.SetTag("voucher.id", id.ToString());
 
                 await service.DeleteAsync(id);
@@ -91,8 +111,12 @@ namespace Softdesign.CoP.Observability.Catalog.Endpoints
             .Produces(StatusCodes.Status204NoContent)
             .WithTags("Vouchers");
 
-            app.MapGet("/vouchers/code/{code}", async (string code, VoucherService service) =>
+            app.MapGet("/vouchers/code/{code}", async (string code, VoucherService service, ICorrelationContextAccessor correlationContextAccessor) =>
             {
+                // Adiciona Correlation ID ao tracing
+                var correlationId = correlationContextAccessor.CorrelationContext?.CorrelationId ?? "unknown";
+                Activity.Current?.SetTag("correlation_id", correlationId);
+
                 Activity.Current?.SetTag("voucher.code", code);
 
                 var voucher = await service.GetByCodeAsync(code);

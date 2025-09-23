@@ -25,7 +25,7 @@ Log.Logger = new LoggerConfiguration()
             logEvent.Properties["RequestPath"].ToString().Contains("/metrics"))
         .WriteTo.Console(outputTemplate:
             "[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj} {Properties:j}{NewLine}")
-        .WriteTo.GrafanaLoki("http://localhost:3100",
+        .WriteTo.GrafanaLoki(builder.Configuration.GetValue<string>("Loki:Url") ?? "http://localhost:3100",
             labels: [
                 new LokiLabel { Key = "app", Value = "Basket" },
                 new LokiLabel { Key = "project", Value = "observability-poc" }
@@ -72,7 +72,7 @@ builder.Services.AddOpenTelemetry()
         tracing.AddHttpClientInstrumentation();
         tracing.AddOtlpExporter(options =>
         {
-            options.Endpoint = new Uri("http://localhost:4317");
+            options.Endpoint = new Uri(builder.Configuration.GetValue<string>("Tempo:Endpoint") ?? "http://localhost:4317");
             options.Protocol = OpenTelemetry.Exporter.OtlpExportProtocol.Grpc;
         });
     })

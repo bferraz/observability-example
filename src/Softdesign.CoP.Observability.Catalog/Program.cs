@@ -27,7 +27,7 @@ Log.Logger = new LoggerConfiguration()
             logEvent.Properties["RequestPath"].ToString().Contains("/metrics"))
         .WriteTo.Console(outputTemplate:
             "[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj} {Properties:j}{NewLine}")
-        .WriteTo.GrafanaLoki("http://localhost:3100",
+        .WriteTo.GrafanaLoki(builder.Configuration.GetValue<string>("Loki:Url") ?? "http://localhost:3100",
             labels: [
                 new LokiLabel { Key = "app", Value = "Catalog" },
                 new LokiLabel { Key = "project", Value = "observability-poc" }
@@ -84,7 +84,7 @@ builder.Services.AddOpenTelemetry()
         tracing.AddHttpClientInstrumentation();
         tracing.AddOtlpExporter(options =>
         {
-            options.Endpoint = new Uri("http://localhost:4317");
+            options.Endpoint = new Uri(builder.Configuration.GetValue<string>("Tempo:Endpoint") ?? "http://localhost:4317");
             options.Protocol = OpenTelemetry.Exporter.OtlpExportProtocol.Grpc;
         });
     })
@@ -99,10 +99,14 @@ builder.Services.AddOpenTelemetry()
 
 var app = builder.Build();
 
-// Pré-cadastro de produtos se não houver nenhum
+// Aplicar migrations automaticamente e pré-cadastro de produtos se não houver nenhum
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<CatalogDbContext>();
+
+    // Aplicar migrations automaticamente
+    db.Database.Migrate();
+
     if (!db.Products.Any())
     {
         var products = new List<Product>
@@ -112,6 +116,19 @@ using (var scope = app.Services.CreateScope())
             new Product { Id = Guid.Parse("eef8e519-7b44-49fc-bf79-30729ce1fa1e"), Name = "Pentes de Memória", Description = "Kit 2x8GB DDR4", Value = 870, QtdStock = 2 }
         };
         db.Products.AddRange(products);
+        db.SaveChanges();
+    }
+
+    // Cadastrar vouchers se não houver nenhum
+    if (!db.Vouchers.Any())
+    {
+        var vouchers = new List<Voucher>
+        {
+            new Voucher { Id = Guid.Parse("35bb3de5-b542-44cf-a6ac-84e3d291ddaa"), Code = "DESCONTO10", Description = "Voucher 10%", Discount = 10, ExpiryDate = DateTime.SpecifyKind(new DateTime(2025, 12, 31), DateTimeKind.Utc) },
+            new Voucher { Id = Guid.NewGuid(), Code = "DESCONTO15", Description = "Voucher 15%", Discount = 15, ExpiryDate = DateTime.SpecifyKind(new DateTime(2025, 12, 31), DateTimeKind.Utc) },
+            new Voucher { Id = Guid.NewGuid(), Code = "FRETEGRATIS", Description = "Frete Grátis", Discount = 0, ExpiryDate = DateTime.SpecifyKind(new DateTime(2025, 12, 31), DateTimeKind.Utc) }
+        };
+        db.Vouchers.AddRange(vouchers);
         db.SaveChanges();
     }
 }
