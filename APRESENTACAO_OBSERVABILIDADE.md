@@ -195,14 +195,6 @@ Activity.Current?.SetTag("purchase.userId", userId.ToString());
 2. 🛒 **BFF** → Basket API (buscar carrinho)
 3. 📦 **BFF** → Catalog API (verificar voucher)
 4. 📦 **BFF** → Catalog API (atualizar estoque)
-5. 📊 **Todas as APIs** → Observability Stack
-
-### **💡 Momento de Código**: Mostrar estrutura do projeto
-- Navegação pelos diretórios
-- appsettings.json vs appsettings.Development.json
-- docker-compose.yml
-
----
 
 ## 4. 🛠️ Implementação Prática - Logs
 
@@ -450,35 +442,6 @@ app.MapPost("/purchase", async (PurchaseRequest request, IPurchaseService purcha
     return success ? Results.Ok(response) : Results.BadRequest(errorMessage);
 });
 ```
-
-### Propagação de Traces Entre Serviços
-
-#### **💡 Momento de Código**: CorrelationIdDelegatingHandler.cs
-```csharp
-public class CorrelationIdDelegatingHandler : DelegatingHandler
-{
-    private readonly ICorrelationContextAccessor _correlationContextAccessor;
-
-    public CorrelationIdDelegatingHandler(ICorrelationContextAccessor correlationContextAccessor)
-    {
-        _correlationContextAccessor = correlationContextAccessor;
-    }
-
-    protected override async Task<HttpResponseMessage> SendAsync(
-        HttpRequestMessage request, CancellationToken cancellationToken)
-    {
-        var correlationId = _correlationContextAccessor.CorrelationContext?.CorrelationId;
-        
-        if (!string.IsNullOrEmpty(correlationId))
-        {
-            request.Headers.Add("X-Correlation-ID", correlationId);
-        }
-
-        return await base.SendAsync(request, cancellationToken);
-    }
-}
-```
-
 ---
 
 ## 7. 🔗 Correlation ID e Rastreamento
@@ -1140,11 +1103,11 @@ class PaymentTracing
 
 ---
 
-## 10. 🚀 Demo ao Vivo
+## 10. 🚀 Demo
 
 ### Roteiro da Demo:
 
-#### 1. **Subir o Ambiente** (2 min)
+#### 1. **Subir o Ambiente**
 ```bash
 # Clone e suba tudo
 git clone <repo>
@@ -1152,7 +1115,7 @@ cd Softdesign.CoP.Observability
 docker-compose up -d
 ```
 
-#### 2. **Fazer uma Compra** (3 min)
+#### 2. **Fazer uma Compra**
 ```bash
 # POST para o BFF
 curl -X POST "http://localhost:5115/purchase" \
@@ -1163,7 +1126,7 @@ curl -X POST "http://localhost:5115/purchase" \
   }'
 ```
 
-#### 3. **Mostrar Observabilidade** (5 min)
+#### 3. **Mostrar Observabilidade**
 
 **Logs no Grafana:**
 - Acesse http://localhost:3000
@@ -1259,30 +1222,12 @@ curl -X POST "http://localhost:5115/purchase" \
 - Falhas em pagamento > 5%
 - Estoque baixo
 
-### ❓ Perguntas Frequentes
-
-**Q: Como calcular o ROI de observabilidade?**
-A: Tempo economizado em debugging + redução de downtime + melhoria na experiência do usuário
-
-**Q: Qual o impacto na performance?**
-A: ~1-5% de overhead, mas configurável (sampling, filtros)
-
-**Q: Como convencer a equipe/gestão?**
-A: Comece pequeno, mostre valor rapidamente, meça o tempo economizado
-
-**Q: E em aplicações legacy?**
-A: Implemente incrementalmente, comece com logs básicos
-
 ### 📖 Recursos para Aprofundamento
 
 #### **Documentação:**
 - [OpenTelemetry .NET](https://opentelemetry.io/docs/languages/net/)
 - [Serilog Documentation](https://serilog.net/)
 - [Grafana Docs](https://grafana.com/docs/)
-
-#### **Livros:**
-- "Observability Engineering" - Charity Majors
-- "Site Reliability Engineering" - Google
 
 #### **Comunidades:**
 - OpenTelemetry Community
@@ -1309,23 +1254,6 @@ A: Implemente incrementalmente, comece com logs básicos
 2. 🚀 **Melhora velocidade de desenvolvimento**
 3. 😊 **Impacta diretamente experiência do usuário**
 4. 📊 **Dados para tomada de decisão**
-
----
-
-## 📞 Contato e Próximos Passos
-
-### Para implementar em seu projeto:
-1. 📥 **Clone este repositório** como referência
-2. 🔧 **Adapte para sua arquitetura**
-3. 📚 **Estude a documentação** dos componentes
-4. 🤝 **Busque ajuda da comunidade**
-
-### Próximos tópicos para aprofundamento:
-- Advanced tracing (custom spans, baggage)
-- Alerting strategies
-- Cost optimization
-- Multi-cluster observability
-- Security considerations
 
 ---
 
