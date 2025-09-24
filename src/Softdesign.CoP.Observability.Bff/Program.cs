@@ -5,6 +5,8 @@ using OpenTelemetry.Trace;
 using OpenTelemetry.Metrics;
 using Serilog;
 using Serilog.Sinks.Grafana.Loki;
+using Serilog.Formatting.Json;
+using Serilog.Formatting.Compact;
 using Softdesign.CoP.Observability.Bff.Services;
 using OpenTelemetry.Resources;
 using CorrelationId;
@@ -31,7 +33,8 @@ Log.Logger = new LoggerConfiguration()
             labels: [
                 new LokiLabel { Key = "app", Value = "Bff" },
                 new LokiLabel { Key = "project", Value = "observability-poc" }
-            ])
+            ],
+            textFormatter: new Serilog.Formatting.Compact.CompactJsonFormatter()) // Formato JSON mais compatível
     )
     .CreateLogger();
 

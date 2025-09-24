@@ -86,8 +86,23 @@ Log.Logger = new LoggerConfiguration()
     .WriteTo.GrafanaLoki("http://loki:3100", labels: [
         new LokiLabel { Key = "app", Value = "Basket" },
         new LokiLabel { Key = "project", Value = "observability-poc" }
-    ])
+    ],
+    textFormatter: new CompactJsonFormatter()) // JSON estruturado
     .CreateLogger();
+```
+
+#### **🔍 Consultas no Loki via Grafana**
+Com logs estruturados, podemos fazer consultas específicas:
+
+```logql
+// Buscar logs por UserId específico
+{app="Bff"} | json | UserId="123e4567-e89b-12d3-a456-426614174000"
+
+// Buscar por CorrelationId para rastrear requisição completa
+{app=~"Bff|Basket|Catalog"} | json | CorrelationId="482d587c-5b89-4c16-8814-f27c6a6a5ce2"
+
+// Buscar apenas logs de erro/warning
+{app="Bff"} | json | `@l`=~"Warning|Error"
 ```
 
 ### 📊 2. MÉTRICAS - "QUANTO está acontecendo?"
@@ -211,7 +226,8 @@ Log.Logger = new LoggerConfiguration()
         .WriteTo.GrafanaLoki("http://loki:3100", labels: [
             new LokiLabel { Key = "app", Value = "Basket" },
             new LokiLabel { Key = "project", Value = "observability-poc" }
-        ])
+        ],
+        textFormatter: new CompactJsonFormatter())
     )
     .CreateLogger();
 ```

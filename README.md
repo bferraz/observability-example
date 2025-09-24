@@ -14,8 +14,20 @@ O projeto consiste em 3 microservices:
 
 ### Logs
 - **Loki** (Port 3100): Agregação de logs
-- **Serilog**: Estruturação e envio direto para Loki
+- **Serilog**: Estruturação e envio direto para Loki com `CompactJsonFormatter`
 - **Correlation ID**: Rastreamento de requisições entre serviços
+
+#### Exemplos de Consultas LogQL:
+```logql
+// Buscar logs por UserId específico
+{app="Bff"} | json | UserId="123e4567-e89b-12d3-a456-426614174000"
+
+// Rastrear requisição completa via CorrelationId
+{app=~"Bff|Basket|Catalog"} | json | CorrelationId="482d587c-5b89-4c16-8814-f27c6a6a5ce2"
+
+// Logs de erro/warning apenas
+{app="Bff"} | json | `@l`=~"Warning|Error"
+```
 
 ### Métricas
 - **Prometheus** (Port 9090): Coleta e armazenamento de métricas
