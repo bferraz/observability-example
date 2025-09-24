@@ -14,20 +14,21 @@ Ao final desta apresentação, os participantes serão capazes de:
 
 ## 📋 Agenda da Apresentação
 
-### 1. **Introdução à Observabilidade** (10 min)
-### 2. **Os Três Pilares da Observabilidade** (15 min)
-### 3. **Arquitetura do Projeto Demo** (10 min)
-### 4. **Implementação Prática - Logs** (20 min)
-### 5. **Implementação Prática - Métricas** (20 min)
-### 6. **Implementação Prática - Traces** (20 min)
-### 7. **Correlation ID e Rastreamento** (15 min)
-### 8. **Stack de Observabilidade** (15 min)
-### 9. **Demo ao Vivo** (10 min)
-### 10. **Boas Práticas e Q&A** (15 min)
+### 1. **Introdução à Observabilidade**
+### 2. **Os Três Pilares da Observabilidade**
+### 3. **Arquitetura do Projeto Demo**
+### 4. **Implementação Prática - Logs**
+### 5. **Implementação Prática - Métricas**
+### 6. **Implementação Prática - Traces**
+### 7. **Correlation ID e Rastreamento**
+### 8. **Stack de Observabilidade**
+### 9. **Bibliotecas para Outras Linguagens**
+### 10. **Demo ao Vivo**
+### 11. **Boas Práticas e Q&A**
 
 ---
 
-## 1. 📚 Introdução à Observabilidade (10 min)
+## 1. 📚 Introdução à Observabilidade
 
 ### O que é Observabilidade?
 
@@ -59,7 +60,7 @@ public async Task<Product> GetProductAsync(Guid id)
 
 ---
 
-## 2. 🏗️ Os Três Pilares da Observabilidade (15 min)
+## 2. 🏗️ Os Três Pilares da Observabilidade
 
 ### 📝 1. LOGS - "O QUE aconteceu?"
 
@@ -151,7 +152,7 @@ Activity.Current?.SetTag("purchase.userId", userId.ToString());
 
 ---
 
-## 3. 🏛️ Arquitetura do Projeto Demo (10 min)
+## 3. 🏛️ Arquitetura do Projeto Demo
 
 ### Visão Geral dos Microservices
 
@@ -188,7 +189,7 @@ Activity.Current?.SetTag("purchase.userId", userId.ToString());
 
 ---
 
-## 4. 🛠️ Implementação Prática - Logs (20 min)
+## 4. 🛠️ Implementação Prática - Logs
 
 ### Configurando Serilog
 
@@ -265,7 +266,7 @@ app.MapGet("/products/{id}", async (Guid id, ProductService service, ICorrelatio
 
 ---
 
-## 5. 📈 Implementação Prática - Métricas (20 min)
+## 5. 📈 Implementação Prática - Métricas
 
 ### Configurando OpenTelemetry Metrics
 
@@ -378,7 +379,7 @@ scrape_configs:
 
 ---
 
-## 6. 🔍 Implementação Prática - Traces (20 min)
+## 6. 🔍 Implementação Prática - Traces
 
 ### Configurando OpenTelemetry Tracing
 
@@ -464,7 +465,7 @@ public class CorrelationIdDelegatingHandler : DelegatingHandler
 
 ---
 
-## 7. 🔗 Correlation ID e Rastreamento (15 min)
+## 7. 🔗 Correlation ID e Rastreamento
 
 ### O que é Correlation ID?
 
@@ -535,7 +536,7 @@ Filtrar por: correlation_id = "abc-123-def"
 
 ---
 
-## 8. 🛠️ Stack de Observabilidade (15 min)
+## 8. 🛠️ Stack de Observabilidade
 
 ### Arquitetura Completa
 
@@ -631,7 +632,499 @@ service.name = "Bff"
 
 ---
 
-## 9. 🚀 Demo ao Vivo (10 min)
+## 9. 🌐 Bibliotecas para Outras Linguagens
+
+### 🚀 Node.js
+
+#### **Logging:**
+```javascript
+// Winston + OpenTelemetry
+const winston = require('winston');
+const { trace, context } = require('@opentelemetry/api');
+
+const logger = winston.createLogger({
+  format: winston.format.combine(
+    winston.format.timestamp(),
+    winston.format.json()
+  ),
+  transports: [
+    new winston.transports.Console(),
+    new winston.transports.Http({
+      host: 'loki',
+      port: 3100,
+      path: '/loki/api/v1/push'
+    })
+  ]
+});
+
+// Log com trace context
+const span = trace.getActiveSpan();
+logger.info('Processing request', {
+  traceId: span?.spanContext().traceId,
+  spanId: span?.spanContext().spanId,
+  userId: req.user.id
+});
+```
+
+#### **Métricas:**
+```javascript
+// Prometheus client
+const client = require('prom-client');
+
+const httpRequestsTotal = new client.Counter({
+  name: 'http_requests_total',
+  help: 'Total number of HTTP requests',
+  labelNames: ['method', 'route', 'status']
+});
+
+const httpRequestDuration = new client.Histogram({
+  name: 'http_request_duration_seconds',
+  help: 'HTTP request duration in seconds',
+  buckets: [0.1, 0.5, 1, 2, 5]
+});
+
+// Middleware
+app.use((req, res, next) => {
+  const start = Date.now();
+  
+  res.on('finish', () => {
+    const duration = (Date.now() - start) / 1000;
+    httpRequestsTotal.inc({ method: req.method, route: req.route?.path, status: res.statusCode });
+    httpRequestDuration.observe(duration);
+  });
+  
+  next();
+});
+```
+
+#### **Traces:**
+```javascript
+// OpenTelemetry setup
+const { NodeTracerProvider } = require('@opentelemetry/sdk-node');
+const { JaegerExporter } = require('@opentelemetry/exporter-jaeger');
+const { Resource } = require('@opentelemetry/resources');
+const { SemanticResourceAttributes } = require('@opentelemetry/semantic-conventions');
+
+const provider = new NodeTracerProvider({
+  resource: new Resource({
+    [SemanticResourceAttributes.SERVICE_NAME]: 'node-service',
+  }),
+});
+
+provider.addSpanProcessor(
+  new BatchSpanProcessor(
+    new JaegerExporter({
+      endpoint: 'http://tempo:4317',
+    })
+  )
+);
+
+provider.register();
+```
+
+### 🐍 Python
+
+#### **Logging:**
+```python
+# Structlog + OpenTelemetry
+import structlog
+from opentelemetry import trace
+import logging
+
+# Configuração do structlog
+structlog.configure(
+    processors=[
+        structlog.stdlib.filter_by_level,
+        structlog.stdlib.add_logger_name,
+        structlog.stdlib.add_log_level,
+        structlog.stdlib.PositionalArgumentsFormatter(),
+        structlog.processors.TimeStamper(fmt="iso"),
+        structlog.processors.StackInfoRenderer(),
+        structlog.processors.format_exc_info,
+        structlog.processors.UnicodeDecoder(),
+        structlog.processors.JSONRenderer()
+    ],
+    context_class=dict,
+    logger_factory=structlog.stdlib.LoggerFactory(),
+    wrapper_class=structlog.stdlib.BoundLogger,
+    cache_logger_on_first_use=True,
+)
+
+logger = structlog.get_logger()
+
+# Log com contexto de trace
+def process_order(order_id):
+    span = trace.get_current_span()
+    logger.info(
+        "Processing order",
+        order_id=order_id,
+        trace_id=format(span.get_span_context().trace_id, '032x'),
+        span_id=format(span.get_span_context().span_id, '016x')
+    )
+```
+
+#### **Métricas:**
+```python
+# Prometheus client
+from prometheus_client import Counter, Histogram, start_http_server
+import time
+
+# Métricas
+REQUEST_COUNT = Counter('http_requests_total', 'Total HTTP requests', ['method', 'endpoint', 'status'])
+REQUEST_LATENCY = Histogram('http_request_duration_seconds', 'HTTP request latency')
+
+# Decorator para métricas
+def track_metrics(func):
+    def wrapper(*args, **kwargs):
+        start_time = time.time()
+        try:
+            result = func(*args, **kwargs)
+            REQUEST_COUNT.labels(method='POST', endpoint='/orders', status='200').inc()
+            return result
+        except Exception as e:
+            REQUEST_COUNT.labels(method='POST', endpoint='/orders', status='500').inc()
+            raise
+        finally:
+            REQUEST_LATENCY.observe(time.time() - start_time)
+    return wrapper
+
+# Iniciar servidor de métricas
+start_http_server(8000)
+```
+
+#### **Traces:**
+```python
+# OpenTelemetry Python
+from opentelemetry import trace
+from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import OTLPSpanExporter
+from opentelemetry.sdk.resources import Resource
+from opentelemetry.sdk.trace import TracerProvider
+from opentelemetry.sdk.trace.export import BatchSpanProcessor
+
+# Configuração
+resource = Resource.create({"service.name": "python-service"})
+provider = TracerProvider(resource=resource)
+processor = BatchSpanProcessor(
+    OTLPSpanExporter(endpoint="http://tempo:4317", insecure=True)
+)
+provider.add_span_processor(processor)
+trace.set_tracer_provider(provider)
+
+tracer = trace.get_tracer(__name__)
+
+# Usando spans
+@tracer.start_as_current_span("process_payment")
+def process_payment(amount, currency):
+    span = trace.get_current_span()
+    span.set_attribute("payment.amount", amount)
+    span.set_attribute("payment.currency", currency)
+    
+    # Lógica de pagamento
+    if amount > 1000:
+        span.set_attribute("payment.high_value", True)
+    
+    return {"status": "success", "transaction_id": "12345"}
+```
+
+### ☕ Java
+
+#### **Logging:**
+```java
+// Logback + SLF4J + OpenTelemetry
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
+import io.opentelemetry.api.trace.Span;
+
+public class OrderService {
+    private static final Logger logger = LoggerFactory.getLogger(OrderService.class);
+    
+    public void processOrder(String orderId) {
+        Span span = Span.current();
+        
+        // Adicionar contexto ao MDC
+        MDC.put("traceId", span.getSpanContext().getTraceId());
+        MDC.put("spanId", span.getSpanContext().getSpanId());
+        MDC.put("orderId", orderId);
+        
+        try {
+            logger.info("Processing order: {}", orderId);
+            // Lógica de processamento
+            logger.info("Order processed successfully");
+        } finally {
+            MDC.clear();
+        }
+    }
+}
+```
+
+#### **Métricas:**
+```java
+// Micrometer + Prometheus
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.Counter;
+import io.micrometer.core.instrument.Timer;
+import io.micrometer.prometheus.PrometheusConfig;
+import io.micrometer.prometheus.PrometheusMeterRegistry;
+
+@Service
+public class PaymentService {
+    private final Counter paymentCounter;
+    private final Timer paymentTimer;
+    
+    public PaymentService(MeterRegistry meterRegistry) {
+        this.paymentCounter = Counter.builder("payments_total")
+            .description("Total number of payments")
+            .tag("service", "payment")
+            .register(meterRegistry);
+            
+        this.paymentTimer = Timer.builder("payment_duration")
+            .description("Payment processing time")
+            .register(meterRegistry);
+    }
+    
+    public PaymentResult processPayment(PaymentRequest request) {
+        return paymentTimer.recordCallable(() -> {
+            try {
+                PaymentResult result = doProcessPayment(request);
+                paymentCounter.increment(
+                    Tags.of("status", result.getStatus(), "method", request.getMethod())
+                );
+                return result;
+            } catch (Exception e) {
+                paymentCounter.increment(Tags.of("status", "error"));
+                throw e;
+            }
+        });
+    }
+}
+```
+
+#### **Traces:**
+```java
+// OpenTelemetry Java
+import io.opentelemetry.api.GlobalOpenTelemetry;
+import io.opentelemetry.api.trace.Tracer;
+import io.opentelemetry.api.trace.Span;
+import io.opentelemetry.context.Scope;
+
+@Component
+public class OrderTracing {
+    private final Tracer tracer = GlobalOpenTelemetry.getTracer("com.example.orders");
+    
+    public OrderResult processOrder(OrderRequest request) {
+        Span span = tracer.spanBuilder("process_order")
+            .setAttribute("order.id", request.getId())
+            .setAttribute("order.amount", request.getAmount())
+            .setAttribute("user.id", request.getUserId())
+            .startSpan();
+            
+        try (Scope scope = span.makeCurrent()) {
+            // Lógica de processamento
+            OrderResult result = doProcessOrder(request);
+            
+            span.setAttribute("order.status", result.getStatus());
+            span.setStatus(StatusCode.OK);
+            
+            return result;
+        } catch (Exception e) {
+            span.recordException(e);
+            span.setStatus(StatusCode.ERROR, e.getMessage());
+            throw e;
+        } finally {
+            span.end();
+        }
+    }
+}
+```
+
+### 🐘 PHP
+
+#### **Logging:**
+```php
+<?php
+// Monolog + OpenTelemetry
+use Monolog\Logger;
+use Monolog\Handler\StreamHandler;
+use Monolog\Formatter\JsonFormatter;
+use OpenTelemetry\API\Trace\Span;
+
+class OrderService 
+{
+    private Logger $logger;
+    
+    public function __construct() 
+    {
+        $this->logger = new Logger('orders');
+        $handler = new StreamHandler('php://stdout', Logger::INFO);
+        $handler->setFormatter(new JsonFormatter());
+        $this->logger->pushHandler($handler);
+    }
+    
+    public function processOrder(string $orderId): void 
+    {
+        $span = Span::getCurrent();
+        $context = [
+            'order_id' => $orderId,
+            'trace_id' => $span->getContext()->getTraceId(),
+            'span_id' => $span->getContext()->getSpanId(),
+            'service' => 'orders'
+        ];
+        
+        $this->logger->info('Processing order started', $context);
+        
+        try {
+            // Lógica de processamento
+            $this->doProcessOrder($orderId);
+            $this->logger->info('Order processed successfully', array_merge($context, ['status' => 'success']));
+        } catch (Exception $e) {
+            $this->logger->error('Order processing failed', array_merge($context, [
+                'status' => 'error',
+                'error' => $e->getMessage()
+            ]));
+            throw $e;
+        }
+    }
+}
+```
+
+#### **Métricas:**
+```php
+<?php
+// Prometheus PHP client
+use Prometheus\CollectorRegistry;
+use Prometheus\Storage\Redis;
+use Prometheus\RenderTextFormat;
+
+class MetricsService 
+{
+    private CollectorRegistry $registry;
+    
+    public function __construct() 
+    {
+        $adapter = new Redis(['host' => 'redis']);
+        $this->registry = new CollectorRegistry($adapter);
+    }
+    
+    public function recordPayment(float $amount, string $status): void 
+    {
+        // Counter
+        $counter = $this->registry->getOrRegisterCounter(
+            'payments',
+            'payments_total',
+            'Total number of payments',
+            ['status', 'service']
+        );
+        $counter->inc(['status' => $status, 'service' => 'payment']);
+        
+        // Histogram
+        $histogram = $this->registry->getOrRegisterHistogram(
+            'payments',
+            'payment_amount',
+            'Payment amounts',
+            ['currency'],
+            [10, 50, 100, 500, 1000, 5000]
+        );
+        $histogram->observe($amount, ['currency' => 'USD']);
+    }
+    
+    public function getMetrics(): string 
+    {
+        $renderer = new RenderTextFormat();
+        return $renderer->render($this->registry->getMetricFamilySamples());
+    }
+}
+```
+
+#### **Traces:**
+```php
+<?php
+// OpenTelemetry PHP
+use OpenTelemetry\API\Trace\Tracer;
+use OpenTelemetry\API\Trace\TracerProvider;
+use OpenTelemetry\SDK\Trace\TracerProviderBuilder;
+use OpenTelemetry\Contrib\Otlp\SpanExporter;
+
+class PaymentTracing 
+{
+    private Tracer $tracer;
+    
+    public function __construct() 
+    {
+        $tracerProvider = (new TracerProviderBuilder())
+            ->addSpanProcessor(
+                new BatchSpanProcessor(
+                    new SpanExporter('http://tempo:4317')
+                )
+            )
+            ->build();
+            
+        $this->tracer = $tracerProvider->getTracer('payment-service');
+    }
+    
+    public function processPayment(array $paymentData): array 
+    {
+        $span = $this->tracer->spanBuilder('process_payment')
+            ->setAttribute('payment.amount', $paymentData['amount'])
+            ->setAttribute('payment.currency', $paymentData['currency'])
+            ->setAttribute('user.id', $paymentData['user_id'])
+            ->startSpan();
+            
+        try {
+            $result = $this->doProcessPayment($paymentData);
+            
+            $span->setAttribute('payment.status', $result['status']);
+            $span->setAttribute('payment.transaction_id', $result['transaction_id']);
+            
+            return $result;
+        } catch (Exception $e) {
+            $span->recordException($e);
+            $span->setStatus(StatusCode::ERROR, $e->getMessage());
+            throw $e;
+        } finally {
+            $span->end();
+        }
+    }
+}
+```
+
+### 📦 Stacks de Observabilidade por Linguagem
+
+| Linguagem | Logs | Métricas | Traces | Stack Recomendado |
+|-----------|------|----------|--------|-------------------|
+| **.NET** | Serilog | OpenTelemetry | OpenTelemetry | Serilog + OTel + Grafana Stack |
+| **Node.js** | Winston/Pino | Prometheus Client | OpenTelemetry | Winston + Prometheus + OTel |
+| **Python** | Structlog | Prometheus Client | OpenTelemetry | Structlog + Prometheus + OTel |
+| **Java** | Logback + SLF4J | Micrometer | OpenTelemetry | Logback + Micrometer + OTel |
+| **PHP** | Monolog | Prometheus PHP | OpenTelemetry | Monolog + Prometheus + OTel |
+| **Go** | Zap/Logrus | Prometheus | OpenTelemetry | Zap + Prometheus + OTel |
+| **Ruby** | Ruby Logger | Prometheus | OpenTelemetry | Rails Logger + Prometheus + OTel |
+
+### 🔗 Recursos por Linguagem
+
+#### **Node.js:**
+- [OpenTelemetry for Node.js](https://opentelemetry.io/docs/languages/js/)
+- [Winston Logger](https://github.com/winstonjs/winston)
+- [Prometheus Client](https://github.com/siimon/prom-client)
+
+#### **Python:**
+- [OpenTelemetry for Python](https://opentelemetry.io/docs/languages/python/)
+- [Structlog](https://www.structlog.org/)
+- [Prometheus Python Client](https://github.com/prometheus/client_python)
+
+#### **Java:**
+- [OpenTelemetry for Java](https://opentelemetry.io/docs/languages/java/)
+- [Micrometer](https://micrometer.io/)
+- [Logback](http://logback.qos.ch/)
+
+#### **PHP:**
+- [OpenTelemetry for PHP](https://opentelemetry.io/docs/languages/php/)
+- [Monolog](https://github.com/Seldaek/monolog)
+- [Prometheus PHP Client](https://github.com/promphp/prometheus_client_php)
+
+---
+
+## 10. 🚀 Demo ao Vivo
 
 ### Roteiro da Demo:
 
@@ -680,7 +1173,7 @@ curl -X POST "http://localhost:5115/purchase" \
 
 ---
 
-## 10. 📚 Boas Práticas e Q&A (15 min)
+## 11. 📚 Boas Práticas e Q&A
 
 ### ✅ Boas Práticas de Observabilidade
 
