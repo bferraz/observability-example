@@ -5,6 +5,7 @@ using Softdesign.CoP.Observability.Catalog.Service;
 using Softdesign.CoP.Observability.Catalog.Domain;
 using OpenTelemetry.Trace;
 using OpenTelemetry.Metrics;
+using OpenTelemetry.Instrumentation.EntityFrameworkCore;
 using Serilog;
 using Serilog.Sinks.Grafana.Loki;
 using Serilog.Formatting.Json;
@@ -81,6 +82,11 @@ builder.Services.AddOpenTelemetry()
                 !context.Request.Path.StartsWithSegments("/metrics");
         });
         tracing.AddHttpClientInstrumentation();
+        tracing.AddEntityFrameworkCoreInstrumentation(options =>
+        {
+            options.SetDbStatementForStoredProcedure = true;
+            options.SetDbStatementForText = true;
+        });
         tracing.AddOtlpExporter(options =>
         {
             options.Endpoint = new Uri(builder.Configuration.GetValue<string>("Tempo:Endpoint") ?? "http://localhost:4317");
